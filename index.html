@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#1a2336">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Estructura · Engenharia da Fala</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <style>
   :root{
     --bg:#0f172a;--panel:#1e293b;--panel2:#273449;--ink:#e2e8f0;--muted:#94a3b8;
@@ -956,6 +959,7 @@ function runSmartSession(list,host,onDone){
 }
 
 renderHome();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 </script>
 </body>
 </html>
