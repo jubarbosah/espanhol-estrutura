@@ -9,7 +9,7 @@
 <style>
   :root{
     --bg:#0f172a;--panel:#1e293b;--panel2:#273449;--ink:#e2e8f0;--muted:#94a3b8;
-    --accent:#34d399;--accent2:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--line:#334155;
+    --accent:#34d399;--accent2:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--line:#334155;--es:#5eead4;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{-webkit-text-size-adjust:100%}
@@ -41,18 +41,20 @@
   .stepbar div{flex:1;height:6px;border-radius:3px;background:#0c1424;border:1px solid var(--line)}
   .stepbar div.on{background:var(--accent);border-color:var(--accent)}
   .steplabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);font-weight:800;margin-bottom:6px}
-  .builder{background:#0c1424;border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
-  .bcol{margin:8px 0}.bcol .h{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:3px}
-  .bcol .opts{font-size:15.5px}.bcol .opts b{color:#5eead4}
-  .examples{margin:10px 0}.examples div{font-size:15px;padding:4px 0;border-bottom:1px dashed #24344d}
-  .examples div:last-child{border:none}
-  .contrast{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0}
-  .contrast td{border:1px solid var(--line);padding:9px 10px;vertical-align:top}
-  .contrast .pt{color:var(--bad)}.contrast .es{color:var(--ok);font-weight:600}
-  .contrast .tip{color:var(--muted);font-size:12.5px}
-  .ex-box{background:#0c1424;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;font-size:14.5px}
+  .rule{background:#102a20;border-left:3px solid var(--accent);padding:11px 13px;border-radius:8px;font-size:14px;margin:0 0 14px}
+  .rule b{color:var(--accent)}
+  .builder{background:#0c1424;border:1px solid var(--line);border-radius:12px;padding:6px 0;margin:10px 0;overflow:hidden}
+  .bcol{padding:10px 14px;border-bottom:1px solid #1c2940}.bcol:last-child{border:none}
+  .bcol .h{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent2);font-weight:800;margin-bottom:5px}
+  .brow{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
+  .brow .es{color:var(--es);font-weight:600;font-size:15px}
+  .brow .pt{color:var(--muted);font-size:12.5px;text-align:right;flex-shrink:0}
+  .examples{margin:10px 0}
+  .examples .e{padding:6px 0;border-bottom:1px dashed #24344d}.examples .e:last-child{border:none}
+  .examples .es{color:var(--es);font-size:15px}.examples .pt{color:var(--muted);font-size:12.5px}
+  .ex-box{background:#0c1424;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;font-size:14px}
   .hl{color:var(--accent2);font-weight:700}
-  .q{font-size:16.5px;margin:6px 0 12px}.q .blank{color:var(--accent);font-weight:700}
+  .q{font-size:16.5px;margin:6px 0 12px}.q b{color:var(--accent2)}
   .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:13px 14px;border-radius:11px;margin:7px 0;cursor:pointer;font-size:15.5px}
   .opt.correct{background:#10241c;border-color:var(--ok);color:var(--ok)}
   .opt.wrong{background:#2a1418;border-color:var(--bad);color:var(--bad)}
@@ -63,7 +65,8 @@
   .btn:active{transform:scale(.99)}.btn.alt{background:var(--accent2);color:#062a3b}.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
   .fb{margin-top:12px;padding:13px;border-radius:11px;font-size:14.5px;display:none}
   .fb.ok{background:#10241c;border:1px solid var(--ok);display:block}.fb.bad{background:#2a1418;border:1px solid var(--bad);display:block}
-  .fb .ans{font-size:16px;font-weight:800;margin-bottom:3px}.fb .why{margin-top:6px}
+  .fb .ans{font-size:15.5px;font-weight:800;margin-bottom:3px}.fb .why{margin-top:6px}
+  .fb .correct{font-size:18px;color:var(--es);font-weight:800;margin:4px 0}
   .count{font-size:12.5px;color:var(--muted);margin-bottom:8px}
   details{background:#0c1424;border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin:10px 0;font-size:14px}
   summary{cursor:pointer;color:var(--accent2);font-weight:700}
@@ -88,11 +91,11 @@
 </section>
 <section class="view" id="revisar">
   <h2>Revisar (produção)</h2>
-  <p class="sub">Treino de retrieval: traduza PT→ES as estruturas que você já viu. É o que fixa a fala.</p>
+  <p class="sub">Treino de retrieval: traduza PT→ES as estruturas que você já viu. Errou? Você vê a forma certa para corrigir.</p>
   <div class="card"><div id="rev-host"></div></div>
 </section>
 </main>
-<footer>Método baseado em produção ativa (output) + contraste PT↔ES. Progresso salvo no aparelho.</footer>
+<footer>Método: produção ativa (output) + contraste PT↔ES. Progresso salvo no aparelho.</footer>
 
 <script>
 /* ===== HELPERS ===== */
@@ -104,194 +107,242 @@ let state={done:[]};
 try{const s=JSON.parse(localStorage.getItem(SAVE));if(s&&Array.isArray(s.done))state=s;}catch(e){}
 function save(){localStorage.setItem(SAVE,JSON.stringify(state));}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+/* feedback que SEMPRE mostra a forma correta ao errar/quase */
+function fbHTML(m,ans,why){
+  let head;
+  if(m==="exact") head=`<div class="ans">✓ ¡Perfecto!</div>`;
+  else if(m==="loose") head=`<div class="ans">✓ Quase! Confira a grafia/acento:</div><div class="correct">${ans}</div>`;
+  else head=`<div class="ans">❌ A forma correta é:</div><div class="correct">${ans}</div>`;
+  return head+(why?`<div class="why">💡 ${why}</div>`:"");
+}
 
 /* ===== CONTEÚDO: 7 LIÇÕES (Estágios 0 e 1) ===== */
 const LESSONS=[
-/* ---------- ESTÁGIO 0 ---------- */
+/* ===================== ESTÁGIO 0 ===================== */
 {id:"0.1",stage:"Estágio 0 · Os fios que ligam tudo",title:"As palavrinhas que ligam",goal:"ligar ideias sem o português vazar",
- builder:{lead:"Combine para formar frases:",cols:[
-   {h:"começo",opts:"Estoy · Voy · Quiero"},
-   {h:"ligação (com/em/a)",opts:"en casa · con mi hija · al cine"},
-   {h:"conector",opts:"y (e) · pero (mas) · porque"},
-   {h:"fim",opts:"descanso · no tengo tiempo · me gusta"}],
-   examples:["Estoy en casa y descanso.","Voy al cine con mi hija.","Quiero café pero no tengo tiempo."],
-   note:"y = e · o = ou · pero = mas · con = com · en = em"},
+ builder:{rule:"Troque as palavrinhas do PT: <b>e→y · ou→o · mas→pero · com→con · em→en</b>.",
+  cols:[
+   {h:"começo",cells:[["Estoy","estou"],["Voy","vou"],["Quiero","quero"],["Vivo","moro"]]},
+   {h:"ligação (em/com/a)",cells:[["en casa","em casa"],["con mi hija","com minha filha"],["al cine","ao cinema"],["en Florianópolis","em Floripa"]]},
+   {h:"conector",cells:[["y","e"],["pero","mas"],["porque","porque"],["o","ou"]]},
+   {h:"fim",cells:[["descanso","descanso"],["no tengo tiempo","não tenho tempo"],["me gusta","eu gosto"],["trabajo","trabalho"]]}],
+  examples:[["Estoy en casa y descanso.","Estou em casa e descanso."],["Voy al cine con mi hija.","Vou ao cinema com minha filha."],["Quiero salir pero no tengo tiempo.","Quero sair mas não tenho tempo."]],
+  note:"Detalhe fino: y vira <b>e</b> antes de som de i- (padre e hijo); o vira <b>u</b> antes de o- (siete u ocho)."},
  contrast:[
-   {pt:"café e leite",es:"café y leche",tip:"e → y"},
-   {pt:"chá ou café",es:"té o café",tip:"ou → o"},
-   {pt:"barato mas bom",es:"barato pero bueno",tip:"mas → pero"},
-   {pt:"com minha filha",es:"con mi hija",tip:"com → con"},
-   {pt:"em casa",es:"en casa",tip:"em → en"},
-   {pt:"pai e filho",es:"padre e hijo",tip:"y vira 'e' antes de som de i-"}],
+  {pt:"café e leite",es:"café y leche",tip:"e → y"},
+  {pt:"chá ou café",es:"té o café",tip:"ou → o"},
+  {pt:"barato mas bom",es:"barato pero bueno",tip:"mas → pero"},
+  {pt:"com minha filha",es:"con mi hija",tip:"com → con"},
+  {pt:"em casa",es:"en casa",tip:"em → en"},
+  {pt:"pai e filho",es:"padre e hijo",tip:"y vira 'e' antes de som de i-"}],
  recognize:[
-   {q:"café ___ leche (e)",opts:["i","y","e"],c:1,why:"e → y. (só vira 'e' antes de som i-)"},
-   {q:"padre ___ hijo (e)",opts:["y","e"],c:1,why:"Antes de palavra com som de 'i', y vira e: padre e hijo."},
-   {q:"barato ___ bueno (mas)",opts:["mas","pero","sino"],c:1,why:"mas → pero."},
-   {q:"Estoy ___ casa (em)",opts:["en","em","na"],c:0,why:"em → en."},
-   {q:"Voy ___ mi hija (com)",opts:["com","con","co"],c:1,why:"com → con."}],
+  {q:"café ___ leche (e)",opts:["i","y","e"],c:1,why:"e → y (só vira 'e' antes de som de i-)."},
+  {q:"padre ___ hijo (e)",opts:["y","e"],c:1,why:"Antes de som de 'i', y vira e: padre e hijo."},
+  {q:"barato ___ bueno (mas)",opts:["mas","pero","sino"],c:1,why:"mas → pero."},
+  {q:"Estoy ___ casa (em)",opts:["en","em","na"],c:0,why:"em → en."},
+  {q:"Voy ___ mi hija (com)",opts:["com","con","co"],c:1,why:"com → con."},
+  {q:"¿té ___ café? (ou)",opts:["o","ou","u"],c:0,why:"ou → o."},
+  {q:"siete ___ ocho (ou)",opts:["o","u"],c:1,why:"Antes de som de 'o', o vira u: siete u ocho."}],
  produce:[
-   {pt:"Quero café e leite.",a:["quiero café y leche"],why:"e → y."},
-   {pt:"Estou em casa com minha filha.",a:["estoy en casa con mi hija"],why:"em→en, com→con."},
-   {pt:"É barato mas bom.",a:["es barato pero bueno"],why:"mas → pero."},
-   {pt:"Chá ou café?",a:["té o café","¿té o café?"],why:"ou → o."}],
+  {pt:"Quero café e leite.",a:["quiero café y leche"],why:"e → y."},
+  {pt:"Estou em casa com minha filha.",a:["estoy en casa con mi hija"],why:"em→en, com→con."},
+  {pt:"É barato mas bom.",a:["es barato pero bueno"],why:"mas → pero."},
+  {pt:"Chá ou café?",a:["¿té o café?","té o café"],why:"ou → o."},
+  {pt:"Moro em Florianópolis com minha filha.",a:["vivo en florianópolis con mi hija"],why:"em→en, com→con."},
+  {pt:"Quero sair mas faz frio.",a:["quiero salir pero hace frío","quiero salir pero hace frio"],why:"mas→pero; faz frio→hace frío."}],
  free:{prompt:"Escreva 2 frases dizendo onde você está e o que está fazendo, ligando com y / pero / con / en.",
-   models:["Estoy en casa y estoy descansando.","Quiero salir pero hace frío.","Estoy con mi hija en el parque."]}},
+  models:["Estoy en casa y estoy descansando.","Quiero salir pero hace frío.","Estoy con mi hija en el parque."]}},
 
 {id:"0.2",stage:"Estágio 0 · Os fios que ligam tudo",title:"Onde entra o pronome",goal:"usar me / te / lo / la / se na hora certa",
- builder:{lead:"Com verbo conjugado, o pronome vem ANTES:",cols:[
-   {h:"pronome",opts:"me · te · lo · la · se"},
-   {h:"verbo",opts:"despierto · llamo · veo · conozco · llama"}],
-   examples:["me despierto (eu me acordo)","te llamo (eu te ligo)","lo veo (eu o vejo)","se llama Ana (ela se chama Ana)"],
-   note:"Conjugado → ANTES. Infinitivo/imperativo → COLADO (llamarte, ¡llámame!)."},
+ builder:{rule:"Verbo conjugado → pronome <b>ANTES</b> (me despierto). Infinitivo e ordem afirmativa → <b>colado</b> (llamarte, ¡llámame!).",
+  cols:[
+   {h:"pronome",cells:[["me","me"],["te","te"],["lo / la","o / a"],["se","se"]]},
+   {h:"+ verbo conjugado (ANTES)",cells:[["me despierto","eu me acordo"],["te llamo","eu te ligo"],["lo veo","eu o vejo"],["se llama","ele(a) se chama"]]},
+   {h:"colado (infinitivo/ordem)",cells:[["acostarme","me deitar"],["llamarte","te ligar"],["¡llámame!","me liga!"],["dámelo","me dá isso"]]}],
+  examples:[["Me despierto a las siete.","Eu me acordo às sete."],["Voy a acostarme temprano.","Vou me deitar cedo."],["¡Llámame más tarde!","Me liga mais tarde!"]],
+  note:"Dois pronomes juntos: <b>me lo das</b>. E 'le + lo' vira <b>se lo</b> (nunca 'le lo')."},
  contrast:[
-   {pt:"desperto-me / me desperto",es:"me despierto",tip:"verbo conjugado → pronome ANTES"},
-   {pt:"vou te ligar",es:"voy a llamarte",tip:"infinitivo → pronome COLADO no fim"},
-   {pt:"me dá isso",es:"dámelo",tip:"imperativo afirmativo → colado: dá+me+lo"},
-   {pt:"não me ligue",es:"no me llames",tip:"imperativo negativo → ANTES de novo"},
-   {pt:"dei o livro a ele",es:"se lo di",tip:"le + lo vira 'se lo' (nunca 'le lo')"}],
+  {pt:"me desperto / desperto-me",es:"me despierto",tip:"verbo conjugado → pronome ANTES"},
+  {pt:"vou te ligar",es:"voy a llamarte",tip:"infinitivo → colado no fim"},
+  {pt:"me dá isso",es:"dámelo",tip:"ordem afirmativa → colado: dá+me+lo"},
+  {pt:"não me ligue",es:"no me llames",tip:"ordem negativa → ANTES de novo"},
+  {pt:"dei o livro a ele",es:"se lo di",tip:"le+lo vira 'se lo'"}],
  recognize:[
-   {q:"Eu me acordo às sete.",opts:["despiértome a las siete","me despierto a las siete"],c:1,why:"Verbo conjugado → pronome antes: me despierto."},
-   {q:"Vou te ligar amanhã.",opts:["voy a llamarte mañana","voy a te llamar mañana"],c:0,why:"No infinitivo o pronome cola no fim: llamarte."},
-   {q:"Me passa o sal! (ordem)",opts:["me pasa la sal","pásame la sal"],c:1,why:"Imperativo afirmativo → colado: pásame."},
-   {q:"Ela se chama Ana.",opts:["se llama Ana","llámase Ana"],c:0,why:"Conjugado → antes: se llama."}],
+  {q:"Eu me acordo às sete.",opts:["despiértome a las siete","me despierto a las siete"],c:1,why:"Verbo conjugado → pronome antes: me despierto."},
+  {q:"Vou te ligar amanhã.",opts:["voy a llamarte mañana","voy a te llamar mañana"],c:0,why:"No infinitivo o pronome cola no fim: llamarte."},
+  {q:"Me passa o sal! (ordem)",opts:["me pasa la sal","pásame la sal"],c:1,why:"Ordem afirmativa → colado: pásame."},
+  {q:"Ela se chama Ana.",opts:["se llama Ana","llámase Ana"],c:0,why:"Conjugado → antes: se llama."},
+  {q:"Não me ligue agora.",opts:["no me llames ahora","no llámame ahora"],c:0,why:"Ordem negativa → antes: no me llames."},
+  {q:"Eu o vejo todo dia.",opts:["lo veo todos los días","véolo todos los días"],c:0,why:"Conjugado → antes: lo veo."}],
  produce:[
-   {pt:"Eu me levanto cedo.",a:["me levanto temprano"],why:"Pronome antes: me levanto."},
-   {pt:"Ela se chama Júnia.",a:["se llama júnia","se llama junia"],why:"se llama."},
-   {pt:"Vou me deitar.",a:["voy a acostarme","me voy a acostar"],why:"Infinitivo → acostarme (ou 'me voy a acostar')."},
-   {pt:"Me passa a água.",a:["pásame el agua","pásame la água"],why:"Imperativo → pásame."}],
+  {pt:"Eu me levanto cedo.",a:["me levanto temprano"],why:"Pronome antes: me levanto."},
+  {pt:"Ela se chama Júnia.",a:["se llama júnia","se llama junia"],why:"se llama."},
+  {pt:"Vou me deitar.",a:["voy a acostarme","me voy a acostar"],why:"Infinitivo → acostarme."},
+  {pt:"Me passa a água.",a:["pásame el agua","pásame la água"],why:"Ordem → pásame."},
+  {pt:"Eu te vejo amanhã.",a:["te veo mañana"],why:"Conjugado → antes: te veo."},
+  {pt:"Não me liga tão tarde.",a:["no me llames tan tarde"],why:"Ordem negativa → antes: no me llames."}],
  free:{prompt:"Conte sua rotina da manhã com 2-3 verbos reflexivos (me despierto, me ducho, me visto...).",
-   models:["Me despierto a las siete y me ducho.","Después me visto y desayuno con mi hija."]}},
+  models:["Me despierto a las siete y me ducho.","Después me visto y desayuno con mi hija."]}},
 
 {id:"0.3",stage:"Estágio 0 · Os fios que ligam tudo",title:"\"A gente\" e o tratamento",goal:"falar 'nós' e tratar as pessoas certo",
- builder:{lead:"'A gente' não existe em espanhol:",cols:[
-   {h:"PT-BR",opts:"a gente · você · o senhor · vocês (Espanha)"},
-   {h:"Espanhol",opts:"nosotros · tú · usted · vosotros"},
-   {h:"exemplo",opts:"nosotros vamos · tú quieres · usted quiere · vosotros queréis"}],
-   examples:["A gente vai → Nosotros vamos","Você quer? → ¿Tú quieres?","O senhor pode? → ¿Usted puede? (verbo de 'ele')"],
-   note:"usted/ustedes usam a forma de ele/eles. vosotros = 'vocês' na Espanha."},
+ builder:{rule:"<b>'A gente' = nosotros</b> (verbo de nós). você=<b>tú</b> (informal) · senhor(a)=<b>usted</b> (verbo de ele) · vocês=<b>vosotros</b> (Espanha).",
+  cols:[
+   {h:"quem (PT)",cells:[["a gente","= nós"],["você","informal"],["o senhor / a senhora","formal"],["vocês","Espanha"]]},
+   {h:"em espanhol",cells:[["nosotros","nós"],["tú","você"],["usted","o sr/a"],["vosotros","vocês"]]},
+   {h:"verbo",cells:[["vamos / vivimos","vamos/moramos"],["quieres / tienes","quer/tem"],["quiere / tiene","quer/tem (de ele)"],["queréis / tenéis","querem/têm"]]}],
+  examples:[["Nosotros vivimos en Florianópolis.","A gente mora em Florianópolis."],["¿Tú quieres café?","Você quer café?"],["¿Usted puede esperar?","O senhor pode esperar?"],["¿Vosotros tenéis tiempo?","Vocês têm tempo?"]],
+  note:"⚠️ <b>usted</b> usa o verbo de 'ele/ela' (usted quiere, usted tiene). Cuidado para não dizer 'usted quieres'."},
  contrast:[
-   {pt:"a gente vai (= nós)",es:"nosotros vamos",tip:"'a gente' → nosotros + verbo de nós"},
-   {pt:"você quer (informal)",es:"tú quieres",tip:"informal → tú"},
-   {pt:"o senhor quer (formal)",es:"usted quiere",tip:"formal → usted (verbo de 'ele'!)"},
-   {pt:"vocês querem (Espanha)",es:"vosotros queréis",tip:"vocês → vosotros na Espanha"}],
+  {pt:"a gente vai (= nós)",es:"nosotros vamos",tip:"'a gente' → nosotros + verbo de nós"},
+  {pt:"você quer (informal)",es:"tú quieres",tip:"informal → tú"},
+  {pt:"o senhor quer (formal)",es:"usted quiere",tip:"formal → usted (verbo de 'ele')"},
+  {pt:"vocês querem (Espanha)",es:"vosotros queréis",tip:"vocês → vosotros"}],
  recognize:[
-   {q:"A gente mora em Florianópolis.",opts:["la gente vive en Florianópolis","nosotros vivimos en Florianópolis"],c:1,why:"'A gente' (=nós) → nosotros vivimos."},
-   {q:"Você quer um café? (a um amigo)",opts:["¿usted quiere un café?","¿tú quieres un café?"],c:1,why:"Informal → tú quieres."},
-   {q:"O senhor pode esperar? (formal)",opts:["¿usted puede esperar?","¿tú puedes esperar?"],c:0,why:"Formal → usted (forma de 'ele': puede)."},
-   {q:"Vocês têm tempo? (Espanha)",opts:["¿vosotros tenéis tiempo?","¿vosotros tienen tiempo?"],c:0,why:"vosotros → tenéis."}],
+  {q:"A gente mora em Florianópolis.",opts:["la gente vive en Florianópolis","nosotros vivimos en Florianópolis"],c:1,why:"'A gente' (=nós) → nosotros vivimos."},
+  {q:"Você quer um café? (a um amigo)",opts:["¿usted quiere un café?","¿tú quieres un café?"],c:1,why:"Informal → tú quieres."},
+  {q:"O senhor pode esperar? (formal)",opts:["¿usted puede esperar?","¿usted puedes esperar?"],c:0,why:"usted usa verbo de 'ele': puede."},
+  {q:"Vocês têm tempo? (Espanha)",opts:["¿vosotros tenéis tiempo?","¿vosotros tienen tiempo?"],c:0,why:"vosotros → tenéis."},
+  {q:"A gente vai sair agora.",opts:["la gente va a salir ahora","nosotros vamos a salir ahora"],c:1,why:"'A gente' → nosotros vamos."},
+  {q:"O senhor ___ razão. (ter)",opts:["tiene","tienes"],c:0,why:"usted → verbo de ele: tiene."}],
  produce:[
-   {pt:"A gente vai à praia hoje.",a:["nosotros vamos a la playa hoy","vamos a la playa hoy"],why:"'A gente' → nosotros vamos."},
-   {pt:"Vocês querem café? (Espanha)",a:["¿vosotros queréis café?","vosotros queréis café","¿queréis café?"],why:"vocês → vosotros queréis."},
-   {pt:"O senhor pode me ajudar?",a:["¿usted puede ayudarme?","usted puede ayudarme","¿puede ayudarme?"],why:"Formal → usted puede."}],
- free:{prompt:"Apresente sua família usando 'nosotros' (a gente): onde moram, o que fazem.",
-   models:["Nosotros vivimos en Florianópolis.","Somos tres y nos gusta viajar."]}},
+  {pt:"A gente vai à praia hoje.",a:["nosotros vamos a la playa hoy","vamos a la playa hoy"],why:"'A gente' → nosotros vamos."},
+  {pt:"Vocês querem café? (Espanha)",a:["¿vosotros queréis café?","vosotros queréis café","¿queréis café?"],why:"vocês → vosotros queréis."},
+  {pt:"O senhor pode me ajudar?",a:["¿usted puede ayudarme?","usted puede ayudarme","¿puede ayudarme?"],why:"Formal → usted puede + ayudarme."},
+  {pt:"A gente mora em Florianópolis.",a:["nosotros vivimos en florianópolis","vivimos en florianópolis"],why:"nosotros vivimos."},
+  {pt:"Você tem tempo? (amiga)",a:["¿tú tienes tiempo?","tú tienes tiempo","¿tienes tiempo?"],why:"Informal → tú tienes."},
+  {pt:"A gente tem que ir.",a:["nosotros tenemos que ir","tenemos que ir"],why:"nosotros tenemos que."}],
+ free:{prompt:"Apresente sua família usando 'nosotros' (a gente): onde moram e o que fazem.",
+  models:["Nosotros vivimos en Florianópolis.","Somos tres y nos gusta viajar."]}},
 
-/* ---------- ESTÁGIO 1 ---------- */
+/* ===================== ESTÁGIO 1 ===================== */
 {id:"1.1",stage:"Estágio 1 · Falar de você e da rotina",title:"Estados: ser, estar e as ciladas",goal:"descrever estados, sensações e existência",
- builder:{lead:"Cada ideia pede um verbo diferente:",cols:[
-   {h:"ser (identidade)",opts:"Soy madre · Soy brasileña"},
-   {h:"estar (estado/lugar)",opts:"Estoy cansada · Estoy en casa"},
-   {h:"tener (sensação)",opts:"Tengo hambre · Tengo frío · Tengo 40 años"},
-   {h:"hacer (clima)",opts:"Hace frío · Hace calor"},
-   {h:"hay (existir)",opts:"Hay una farmacia · Hay mucha gente"}],
-   examples:["Soy madre y estoy cansada.","Tengo hambre y hace frío.","¿Hay una farmacia cerca?"],
-   note:"'estou com fome' → TENGO hambre · 'faz frio' → HACE frío · 'tem pão?' → ¿HAY pan?"},
+ builder:{rule:"Sensação→<b>tener</b> (tengo hambre) · clima→<b>hacer</b> (hace frío) · existir→<b>hay</b> · estado→<b>estar</b> · identidade→<b>ser</b>.",
+  cols:[
+   {h:"ser — quem você é",cells:[["Soy madre","Sou mãe"],["Soy brasileña","Sou brasileira"]]},
+   {h:"estar — estado/lugar",cells:[["Estoy cansada","Estou cansada"],["Estoy en casa","Estou em casa"]]},
+   {h:"tener — sensação/idade",cells:[["Tengo hambre","Estou com fome"],["Tengo frío","Estou com frio"],["Tengo sueño","Estou com sono"],["Tengo 40 años","Tenho 40 anos"],["Tengo prisa","Estou com pressa"]]},
+   {h:"hacer — clima",cells:[["Hace frío","Faz frio"],["Hace calor","Faz calor"],["Hace sol","Faz sol"]]},
+   {h:"hay — existe",cells:[["Hay una farmacia","Tem uma farmácia"],["Hay mucha gente","Tem muita gente"]]}],
+  examples:[["Soy madre y estoy cansada.","Sou mãe e estou cansada."],["Tengo hambre y hace frío.","Estou com fome e faz frio."],["¿Hay una farmacia cerca?","Tem uma farmácia perto?"]],
+  note:"⭐ As 3 ciladas: <b>estou com fome</b> = tengo hambre · <b>faz frio</b> = hace frío · <b>tem pão?</b> = ¿hay pan?"},
  contrast:[
-   {pt:"estou com fome",es:"tengo hambre",tip:"sensação → tener (não 'estoy con hambre')"},
-   {pt:"tenho 40 anos",es:"tengo 40 años",tip:"idade → tener (igual ao PT)"},
-   {pt:"faz frio hoje",es:"hace frío hoy",tip:"clima → hacer (não 'está frío')"},
-   {pt:"tem pão? (existe)",es:"¿hay pan?",tip:"'ter' existencial → hay (não 'tiene')"},
-   {pt:"o banheiro está ao fundo",es:"el baño está al fondo",tip:"lugar de algo definido → estar"}],
+  {pt:"estou com fome",es:"tengo hambre",tip:"sensação → tener (não 'estoy con hambre')"},
+  {pt:"tenho 40 anos",es:"tengo 40 años",tip:"idade → tener"},
+  {pt:"faz frio hoje",es:"hace frío hoy",tip:"clima → hacer (não 'está frío')"},
+  {pt:"tem pão? (existe)",es:"¿hay pan?",tip:"'ter' existencial → hay (não 'tiene')"},
+  {pt:"o banheiro está ao fundo",es:"el baño está al fondo",tip:"lugar de algo definido → estar"},
+  {pt:"estou com sono",es:"tengo sueño",tip:"sensação → tener"}],
  recognize:[
-   {q:"Estou com sono.",opts:["estoy con sueño","tengo sueño"],c:1,why:"Sensação → tener: tengo sueño."},
-   {q:"Faz calor hoje.",opts:["hace calor hoy","está calor hoy"],c:0,why:"Clima → hacer: hace calor."},
-   {q:"Tem muita gente aqui.",opts:["tiene mucha gente aquí","hay mucha gente aquí"],c:1,why:"Existência → hay."},
-   {q:"Estou cansada.",opts:["estoy cansada","soy cansada"],c:0,why:"Estado passageiro → estar."}],
+  {q:"Estou com sono.",opts:["estoy con sueño","tengo sueño"],c:1,why:"Sensação → tener: tengo sueño."},
+  {q:"Faz calor hoje.",opts:["hace calor hoy","está calor hoy"],c:0,why:"Clima → hacer: hace calor."},
+  {q:"Tem muita gente aqui.",opts:["tiene mucha gente aquí","hay mucha gente aquí"],c:1,why:"Existência → hay."},
+  {q:"Estou cansada.",opts:["soy cansada","estoy cansada"],c:1,why:"Estado passageiro → estar."},
+  {q:"Tenho 40 anos.",opts:["tengo 40 años","soy 40 años"],c:0,why:"Idade → tener: tengo 40 años."},
+  {q:"Tem uma farmácia perto?",opts:["¿tiene una farmacia cerca?","¿hay una farmacia cerca?"],c:1,why:"Existência → hay."},
+  {q:"Estou com frio.",opts:["tengo frío","estoy frío"],c:0,why:"Sensação → tener: tengo frío."}],
  produce:[
-   {pt:"Estou com fome.",a:["tengo hambre"],why:"Sensação → tener."},
-   {pt:"Faz frio hoje.",a:["hace frío hoy","hace frio hoy"],why:"Clima → hacer."},
-   {pt:"Tem uma farmácia perto?",a:["¿hay una farmacia cerca?","hay una farmacia cerca"],why:"Existência → hay."},
-   {pt:"Sou mãe e estou cansada.",a:["soy madre y estoy cansada"],why:"identidade→ser, estado→estar."},
-   {pt:"Tenho pressa.",a:["tengo prisa"],why:"Sensação → tener prisa."}],
+  {pt:"Estou com fome.",a:["tengo hambre"],why:"Sensação → tener."},
+  {pt:"Faz frio hoje.",a:["hace frío hoy","hace frio hoy"],why:"Clima → hacer."},
+  {pt:"Tem uma farmácia perto?",a:["¿hay una farmacia cerca?","hay una farmacia cerca"],why:"Existência → hay."},
+  {pt:"Sou mãe e estou cansada.",a:["soy madre y estoy cansada"],why:"identidade→ser, estado→estar."},
+  {pt:"Tenho pressa.",a:["tengo prisa"],why:"Sensação → tener prisa."},
+  {pt:"Faz calor e tem muita gente.",a:["hace calor y hay mucha gente"],why:"clima→hace, existir→hay."},
+  {pt:"Estou com sono.",a:["tengo sueño"],why:"Sensação → tener sueño."}],
  free:{prompt:"Descreva como você está agora e como está o tempo aí (use estoy, tengo, hace).",
-   models:["Estoy un poco cansada y tengo hambre.","Hace calor hoy y hay mucha gente en la calle."]}},
+  models:["Estoy un poco cansada y tengo hambre.","Hace calor hoy y hay mucha gente en la calle."]}},
 
 {id:"1.2",stage:"Estágio 1 · Falar de você e da rotina",title:"\"Eu gosto\": a frase que inverte",goal:"dizer do que você gosta (gustar)",
- builder:{lead:"O sujeito vira a coisa de que se gosta:",cols:[
-   {h:"a quem",opts:"me · te · le · nos"},
-   {h:"verbo",opts:"gusta (1 coisa/infinitivo) · gustan (várias)"},
-   {h:"o quê",opts:"el café · caminar · los dulces · las películas"}],
-   examples:["Me gusta el café.","Me gusta caminar.","Me gustan los dulces.","Me encanta esa serie."],
-   note:"1 coisa ou verbo → gusta · plural → gustan. Família: encanta, duele, parece, falta."},
+ builder:{rule:"Inverte! 'eu gosto de X' → <b>me gusta X</b>. 1 coisa/infinitivo→<b>gusta</b>, várias→<b>gustan</b>. O 'de' some.",
+  cols:[
+   {h:"a quem",cells:[["me","eu"],["te","você"],["le","ele/ela"],["nos","a gente"]]},
+   {h:"verbo",cells:[["gusta","1 coisa / infinitivo"],["gustan","várias coisas"],["encanta(n)","adoro"],["duele(n)","dói"]]},
+   {h:"o quê",cells:[["el café","o café"],["caminar","caminhar"],["los dulces","os doces"],["la cabeza","a cabeça"]]}],
+  examples:[["Me gusta el café.","Eu gosto de café."],["Me gusta caminar por la playa.","Gosto de caminhar na praia."],["Me gustan los dulces.","Gosto dos doces."],["Me duele la cabeza.","Minha cabeça dói."]],
+  note:"O sujeito é a coisa: por isso <b>me gustan</b> los dulces (plural concorda com o verbo)."},
  contrast:[
-   {pt:"eu gosto de café",es:"me gusta el café",tip:"vira 'me gusta' (o café é o sujeito); 'de' some"},
-   {pt:"eu gosto dos doces",es:"me gustan los dulces",tip:"plural → gustan"},
-   {pt:"eu adoro essa série",es:"me encanta esa serie",tip:"adorar → encantar (mesma estrutura)"},
-   {pt:"minha cabeça dói",es:"me duele la cabeza",tip:"doer → doler (me duele...)"}],
+  {pt:"eu gosto de café",es:"me gusta el café",tip:"vira 'me gusta'; o 'de' some; entra artigo"},
+  {pt:"eu gosto dos doces",es:"me gustan los dulces",tip:"plural → gustan"},
+  {pt:"eu adoro essa série",es:"me encanta esa serie",tip:"adorar → encantar"},
+  {pt:"minha cabeça dói",es:"me duele la cabeza",tip:"doer → doler (me duele...)"},
+  {pt:"a gente gosta da praia",es:"nos gusta la playa",tip:"a gente → nos gusta"}],
  recognize:[
-   {q:"Eu gosto de café.",opts:["yo gusto café","me gusta de café","me gusta el café"],c:2,why:"me gusta el café (sem 'de', com artigo)."},
-   {q:"Eu gosto dos doces.",opts:["me gusta los dulces","me gustan los dulces"],c:1,why:"Plural → gustan."},
-   {q:"Minha cabeça está doendo.",opts:["mi cabeza duele","me duele la cabeza"],c:1,why:"me duele la cabeza."},
-   {q:"Eu adoro viajar.",opts:["me encanta viajar","yo encanto viajar"],c:0,why:"me encanta + infinitivo."}],
+  {q:"Eu gosto de café.",opts:["yo gusto café","me gusta de café","me gusta el café"],c:2,why:"me gusta el café (sem 'de', com artigo)."},
+  {q:"Eu gosto dos doces.",opts:["me gusta los dulces","me gustan los dulces"],c:1,why:"Plural → gustan."},
+  {q:"Minha cabeça está doendo.",opts:["mi cabeza duele","me duele la cabeza"],c:1,why:"me duele la cabeza."},
+  {q:"Eu adoro viajar.",opts:["yo encanto viajar","me encanta viajar"],c:1,why:"me encanta + infinitivo."},
+  {q:"A gente gosta da praia.",opts:["nosotros gustamos la playa","nos gusta la playa"],c:1,why:"a gente → nos gusta la playa."},
+  {q:"Eles gostam de futebol.",opts:["les gusta el fútbol","ellos gustan fútbol"],c:0,why:"les gusta el fútbol."}],
  produce:[
-   {pt:"Eu gosto de caminhar na praia.",a:["me gusta caminar por la playa","me gusta caminar en la playa"],why:"me gusta + infinitivo."},
-   {pt:"Gosto dos finais de semana.",a:["me gustan los fines de semana"],why:"plural → gustan."},
-   {pt:"Eu adoro essa série.",a:["me encanta esa serie"],why:"adorar → encantar."},
-   {pt:"Minha cabeça dói.",a:["me duele la cabeza"],why:"me duele la cabeza."}],
+  {pt:"Eu gosto de caminhar na praia.",a:["me gusta caminar por la playa","me gusta caminar en la playa"],why:"me gusta + infinitivo."},
+  {pt:"Gosto dos finais de semana.",a:["me gustan los fines de semana"],why:"plural → gustan."},
+  {pt:"Eu adoro essa série.",a:["me encanta esa serie"],why:"adorar → encantar."},
+  {pt:"Minha cabeça dói.",a:["me duele la cabeza"],why:"me duele la cabeza."},
+  {pt:"A gente gosta de viajar.",a:["nos gusta viajar"],why:"a gente → nos gusta."},
+  {pt:"Não gosto de acordar cedo.",a:["no me gusta madrugar","no me gusta despertarme temprano"],why:"no me gusta + infinitivo."}],
  free:{prompt:"Diga 3 coisas de que você gosta e 1 de que não gosta (me gusta / me gustan / no me gusta).",
-   models:["Me gusta el café por la mañana.","Me gustan las películas antiguas.","No me gusta madrugar."]}},
+  models:["Me gusta el café por la mañana.","Me gustan las películas antiguas.","No me gusta madrugar."]}},
 
 {id:"1.3",stage:"Estágio 1 · Falar de você e da rotina",title:"Artigos e gênero (as surpresas)",goal:"acertar o/a e quando usar o artigo",
- builder:{lead:"Gêneros que mudam + artigo onde o PT não põe:",cols:[
-   {h:"masculino (cuidado)",opts:"el problema · el día · el idioma · el mapa"},
-   {h:"feminino",opts:"la leche · la sangre · la nariz · la señal"},
-   {h:"artigo extra",opts:"me gusta el fútbol · los lunes · me lavo las manos"}],
-   examples:["Tengo un problema.","La leche está en la nevera.","Me gusta el fútbol.","Voy al médico los lunes."],
-   note:"-ma costuma ser masculino (el problema, el tema). Gosto/dias/corpo pedem artigo."},
+ builder:{rule:"Gênero pode mudar (<b>la</b> leche, <b>el</b> problema). Gosto, dias e corpo pedem artigo (me gusta <b>el</b> café, <b>los</b> lunes, <b>las</b> manos).",
+  cols:[
+   {h:"masculino (cuidado: -ma)",cells:[["el problema","o problema"],["el día","o dia"],["el idioma","o idioma"],["el mapa","o mapa"]]},
+   {h:"feminino",cells:[["la leche","o leite"],["la sangre","o sangue"],["la nariz","o nariz"],["la señal","o sinal"]]},
+   {h:"artigo extra",cells:[["me gusta el fútbol","gosto de futebol"],["los lunes","às segundas"],["me lavo las manos","lavo as mãos"]]}],
+  examples:[["La leche está en la nevera.","O leite está na geladeira."],["Me gusta el fútbol.","Gosto de futebol."],["Voy al médico los lunes.","Vou ao médico às segundas."]],
+  note:"Palavras em <b>-ma</b> costumam ser masculinas: el problema, el tema, el clima, el idioma."},
  contrast:[
-   {pt:"o leite",es:"la leche",tip:"gênero muda: leite é feminino em ES"},
-   {pt:"um problema",es:"un problema",tip:"masculino, apesar do -a"},
-   {pt:"gosto de futebol",es:"me gusta el fútbol",tip:"gosto pede artigo (el)"},
-   {pt:"às segundas",es:"los lunes",tip:"dias da semana com artigo"},
-   {pt:"lavo as mãos",es:"me lavo las manos",tip:"corpo → artigo (não 'mis manos')"}],
+  {pt:"o leite",es:"la leche",tip:"gênero muda: leite é feminino"},
+  {pt:"um problema",es:"un problema",tip:"masculino, apesar do -a"},
+  {pt:"gosto de futebol",es:"me gusta el fútbol",tip:"gosto pede artigo (el)"},
+  {pt:"às segundas",es:"los lunes",tip:"dias da semana com artigo"},
+  {pt:"lavo as mãos",es:"me lavo las manos",tip:"corpo → artigo (não 'mis manos')"}],
  recognize:[
-   {q:"___ leche (o leite)",opts:["el leche","la leche"],c:1,why:"leche é feminino: la leche."},
-   {q:"___ problema (o problema)",opts:["la problema","el problema"],c:1,why:"-ma → masculino: el problema."},
-   {q:"Eu gosto de música.",opts:["me gusta música","me gusta la música"],c:1,why:"gosto pede artigo: la música."},
-   {q:"Lavo as mãos.",opts:["lavo mis manos","me lavo las manos"],c:1,why:"corpo → artigo: las manos."}],
+  {q:"___ leche (o leite)",opts:["el leche","la leche"],c:1,why:"leche é feminino: la leche."},
+  {q:"___ problema (o problema)",opts:["la problema","el problema"],c:1,why:"-ma → masculino: el problema."},
+  {q:"Eu gosto de música.",opts:["me gusta música","me gusta la música"],c:1,why:"gosto pede artigo: la música."},
+  {q:"Lavo as mãos.",opts:["lavo mis manos","me lavo las manos"],c:1,why:"corpo → artigo: las manos."},
+  {q:"___ día (o dia)",opts:["la día","el día"],c:1,why:"día é masculino: el día."},
+  {q:"Vou ao médico ___ (às segundas).",opts:["los lunes","en lunes"],c:0,why:"dias com artigo: los lunes."}],
  produce:[
-   {pt:"O leite está na geladeira.",a:["la leche está en la nevera","la leche está en el refrigerador"],why:"la leche (feminino)."},
-   {pt:"Tenho um problema.",a:["tengo un problema"],why:"un problema (masculino)."},
-   {pt:"Gosto de música.",a:["me gusta la música"],why:"com artigo: la música."},
-   {pt:"Vou ao médico às segundas.",a:["voy al médico los lunes"],why:"los lunes (com artigo)."}],
+  {pt:"O leite está na geladeira.",a:["la leche está en la nevera","la leche está en el refrigerador"],why:"la leche (feminino)."},
+  {pt:"Tenho um problema.",a:["tengo un problema"],why:"un problema (masculino)."},
+  {pt:"Gosto de música.",a:["me gusta la música"],why:"com artigo: la música."},
+  {pt:"Vou ao médico às segundas.",a:["voy al médico los lunes"],why:"los lunes (com artigo)."},
+  {pt:"O nariz dói.",a:["me duele la nariz"],why:"la nariz (feminino) + me duele."},
+  {pt:"O dia está lindo.",a:["el día está lindo","el día está precioso","el día está hermoso"],why:"el día (masculino)."}],
  free:{prompt:"Fale de 3 coisas de que você gosta usando o artigo (Me gusta el/la...).",
-   models:["Me gusta el cine.","Me gusta la playa.","Me gusta el café con leche."]}},
+  models:["Me gusta el cine.","Me gusta la playa.","Me gusta el café con leche."]}},
 
 {id:"1.4",stage:"Estágio 1 · Falar de você e da rotina",title:"Perífrases do dia a dia",goal:"o que está fazendo, vai fazer e tem que fazer",
- builder:{lead:"Estruturas que deixam a fala natural:",cols:[
-   {h:"estou fazendo",opts:"estoy + trabajando · comiendo · viviendo"},
-   {h:"vou fazer",opts:"voy a + viajar · descansar · llamarte"},
-   {h:"tenho que fazer",opts:"tengo que + estudiar · ir · trabajar"},
-   {h:"tem que (impessoal)",opts:"hay que + esperar · pagar"}],
-   examples:["Estoy trabajando ahora.","Voy a descansar por la noche.","Tengo que ir al consulado.","Hay que esperar el turno."],
-   note:"voy A viajar (precisa do 'a') · tengo QUE ir (precisa do 'que'). Gerúndio: -ando/-iendo."},
+ builder:{rule:"<b>voy A</b> + inf (precisa do 'a') · <b>tengo QUE</b> + inf (precisa do 'que') · <b>estar + gerúndio</b> (-ando/-iendo) · <b>hay que</b> (impessoal).",
+  cols:[
+   {h:"estou fazendo",cells:[["estoy trabajando","estou trabalhando"],["estoy comiendo","estou comendo"],["estoy durmiendo","estou dormindo"]]},
+   {h:"vou fazer",cells:[["voy a viajar","vou viajar"],["voy a descansar","vou descansar"],["voy a llamarte","vou te ligar"]]},
+   {h:"tenho que",cells:[["tengo que estudiar","tenho que estudar"],["tengo que ir","tenho que ir"]]},
+   {h:"tem que (impessoal)",cells:[["hay que esperar","tem que esperar"],["hay que pagar","tem que pagar"]]}],
+  examples:[["Estoy trabajando ahora.","Estou trabalhando agora."],["Voy a descansar por la noche.","Vou descansar à noite."],["Tengo que ir al consulado.","Tenho que ir ao consulado."],["Hay que esperar el turno.","Tem que esperar a vez."]],
+  note:"Gerúndio: -ar→<b>-ando</b>, -er/-ir→<b>-iendo</b>. Irregulares: dormir→durmiendo, decir→diciendo, leer→leyendo."},
  contrast:[
-   {pt:"estou trabalhando",es:"estoy trabajando",tip:"estar + gerúndio (-ando/-iendo)"},
-   {pt:"vou viajar",es:"voy a viajar",tip:"precisa do 'a': voy A viajar"},
-   {pt:"tenho que ir",es:"tengo que ir",tip:"precisa do 'que': tengo QUE ir"},
-   {pt:"tem que esperar (impessoal)",es:"hay que esperar",tip:"impessoal → hay que"}],
+  {pt:"estou trabalhando",es:"estoy trabajando",tip:"estar + gerúndio (-ando/-iendo)"},
+  {pt:"vou viajar",es:"voy a viajar",tip:"precisa do 'a': voy A viajar"},
+  {pt:"tenho que ir",es:"tengo que ir",tip:"precisa do 'que': tengo QUE ir"},
+  {pt:"tem que esperar (impessoal)",es:"hay que esperar",tip:"impessoal → hay que"}],
  recognize:[
-   {q:"Estou comendo.",opts:["estoy comendo","estoy comiendo"],c:1,why:"-er/-ir → -iendo: comiendo."},
-   {q:"Vou viajar amanhã.",opts:["voy viajar mañana","voy a viajar mañana"],c:1,why:"precisa do 'a': voy a viajar."},
-   {q:"Tenho que trabalhar.",opts:["tengo trabajar","tengo que trabajar"],c:1,why:"precisa do 'que': tengo que."},
-   {q:"Tem que pagar antes. (impessoal)",opts:["hay que pagar antes","tiene que pagar antes"],c:0,why:"impessoal → hay que pagar."}],
+  {q:"Estou comendo.",opts:["estoy comendo","estoy comiendo"],c:1,why:"-er/-ir → -iendo: comiendo."},
+  {q:"Vou viajar amanhã.",opts:["voy viajar mañana","voy a viajar mañana"],c:1,why:"precisa do 'a': voy a viajar."},
+  {q:"Tenho que trabalhar.",opts:["tengo trabajar","tengo que trabajar"],c:1,why:"precisa do 'que': tengo que."},
+  {q:"Tem que pagar antes. (impessoal)",opts:["tiene que pagar antes","hay que pagar antes"],c:1,why:"impessoal → hay que pagar."},
+  {q:"Estou dormindo.",opts:["estoy durmiendo","estoy dormiendo"],c:0,why:"gerúndio irregular: durmiendo."},
+  {q:"Vou te ligar.",opts:["voy a llamarte","voy a te llamar"],c:0,why:"voy a + infinitivo com pronome colado: llamarte."}],
  produce:[
-   {pt:"Estou trabalhando agora.",a:["estoy trabajando ahora"],why:"estar + gerúndio."},
-   {pt:"Vou descansar à noite.",a:["voy a descansar por la noche"],why:"voy a + inf; à noite → por la noche."},
-   {pt:"Tenho que ir ao consulado.",a:["tengo que ir al consulado"],why:"tengo que + inf."},
-   {pt:"Tem que esperar a vez.",a:["hay que esperar el turno","hay que esperar la vez"],why:"impessoal → hay que."}],
+  {pt:"Estou trabalhando agora.",a:["estoy trabajando ahora"],why:"estar + gerúndio."},
+  {pt:"Vou descansar à noite.",a:["voy a descansar por la noche"],why:"voy a + inf; à noite → por la noche."},
+  {pt:"Tenho que ir ao consulado.",a:["tengo que ir al consulado"],why:"tengo que + inf."},
+  {pt:"Tem que esperar a vez.",a:["hay que esperar el turno","hay que esperar la vez"],why:"impessoal → hay que."},
+  {pt:"Estou aprendendo espanhol.",a:["estoy aprendiendo español"],why:"estar + gerúndio (-iendo)."},
+  {pt:"Vou me deitar cedo hoje.",a:["voy a acostarme temprano hoy","hoy voy a acostarme temprano"],why:"voy a + acostarme."}],
  free:{prompt:"Conte: o que você está fazendo agora, o que vai fazer hoje e o que tem que fazer.",
-   models:["Estoy estudiando español.","Hoy voy a trabajar un poco.","Tengo que llamar al consulado."]}}
+  models:["Estoy estudiando español.","Hoy voy a trabajar un poco.","Tengo que llamar al consulado."]}}
 ];
 
 /* ===== NAV ===== */
@@ -303,20 +354,19 @@ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
   if(b.dataset.v==="revisar")startReview();
 });
 
-/* ===== HOME / LISTA DE LIÇÕES ===== */
+/* ===== HOME ===== */
 function isUnlocked(i){return i===0||state.done.includes(LESSONS[i-1].id);}
 function renderHome(){
   document.getElementById("licao").style.display="none";
   const host=document.getElementById("home");host.style.display="block";
   const pct=Math.round(state.done.length/LESSONS.length*100);
-  let h=`<div class="method">🎯 <b>Como cada lição funciona:</b> 1) ver o padrão → 2) notar o contraste PT↔ES → 3) reconhecer → 4) produzir com apoio → 5) produzir livre. Entender a estrutura e depois falar.</div>
+  let h=`<div class="method">🎯 <b>Cada lição:</b> 1) ver o padrão → 2) contraste PT↔ES → 3) reconhecer → 4) produzir com cola → 5) produzir livre. Errou? Você vê a forma certa para corrigir.</div>
    <div class="topbar"><div class="bar"><div style="width:${pct}%"></div></div><span class="pct">${pct}%</span></div>`;
-  let curStage="";
+  let cur="";
   LESSONS.forEach((l,i)=>{
-    if(l.stage!==curStage){curStage=l.stage;h+=`<div class="stagehead">${l.stage}</div>`;}
+    if(l.stage!==cur){cur=l.stage;h+=`<div class="stagehead">${l.stage}</div>`;}
     const done=state.done.includes(l.id),un=isUnlocked(i);
-    const cls=done?"done":(un?"avail":"locked");
-    const icon=done?"✓":(un?"▶":"🔒");
+    const cls=done?"done":(un?"avail":"locked");const icon=done?"✓":(un?"▶":"🔒");
     h+=`<div class="lesson ${cls}" data-i="${i}"><div class="num">${icon}</div>
       <div><div class="t">${l.title}</div><div class="s">para ${l.goal}</div></div></div>`;
   });
@@ -324,8 +374,20 @@ function renderHome(){
   host.querySelectorAll(".lesson").forEach(el=>{const i=+el.dataset.i;if(isUnlocked(i))el.onclick=()=>openLesson(i);});
 }
 
-/* ===== LIÇÃO: ciclo de 5 passos ===== */
-const STEP_NAMES=["Ver o padrão","Notar o contraste","Reconhecer","Produzir com apoio","Produzir livre"];
+/* ===== render helpers ===== */
+function builderHTML(b,compact){
+  let h=`<div class="builder">`;
+  b.cols.forEach(c=>{
+    h+=`<div class="bcol"><div class="h">${c.h}</div>`;
+    c.cells.forEach(cell=>h+=`<div class="brow"><span class="es">${cell[0]}</span><span class="pt">${cell[1]}</span></div>`);
+    h+=`</div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+
+/* ===== LIÇÃO: 5 passos ===== */
+const STEP_NAMES=["Ver o padrão","Contraste","Reconhecer","Produzir com cola","Produzir livre"];
 function openLesson(i){
   const l=LESSONS[i];let step=0;window.scrollTo(0,0);
   document.getElementById("home").style.display="none";
@@ -333,75 +395,62 @@ function openLesson(i){
   function frame(inner){
     const bars=STEP_NAMES.map((_,k)=>`<div class="${k<=step?'on':''}"></div>`).join("");
     return `<button class="back" onclick="renderHome()">← Lições</button>
-      <div class="count">${l.title}</div>
-      <div class="stepbar">${bars}</div>
-      <div class="steplabel">Passo ${step+1}/5 · ${STEP_NAMES[step]}</div>
-      <div class="card">${inner}</div>`;
+      <div class="count">${l.title}</div><div class="stepbar">${bars}</div>
+      <div class="steplabel">Passo ${step+1}/5 · ${STEP_NAMES[step]}</div><div class="card">${inner}</div>`;
   }
   function go(n){step=n;render();window.scrollTo(0,0);}
-  function render(){
-    if(step===0) renderModel();
-    else if(step===1) renderContrast();
-    else if(step===2) renderRecognize();
-    else if(step===3) renderProduce();
-    else renderFree();
-  }
-  /* passo 1 */
+  window.__go=go;
+  function render(){[renderModel,renderContrast,renderRecognize,renderProduce,renderFree][step]();}
+
   function renderModel(){
     const b=l.builder;
-    let bx=`<div class="builder"><div style="font-size:13px;color:var(--muted);margin-bottom:6px">${b.lead}</div>`;
-    b.cols.forEach(c=>{bx+=`<div class="bcol"><div class="h">${c.h}</div><div class="opts">${c.opts.replace(/·/g,"<b>·</b>")}</div></div>`;});
-    bx+=`</div>`;
-    let ex=`<div class="examples">`+b.examples.map(e=>`<div>✅ ${e}</div>`).join("")+`</div>`;
-    host.innerHTML=frame(`<h3>${l.title}</h3>${bx}${ex}<div class="ex-box">💡 ${b.note}</div>
+    let ex=`<div class="examples">`+b.examples.map(e=>`<div class="e"><div class="es">✅ ${e[0]}</div><div class="pt">${e[1]}</div></div>`).join("")+`</div>`;
+    host.innerHTML=frame(`<h3>${l.title}</h3><div class="rule">📌 <b>Regra de ouro:</b> ${b.rule}</div>
+      ${builderHTML(b)}${ex}<div class="ex-box">💡 ${b.note}</div>
       <button class="btn" onclick="__go(1)">Entendi o padrão →</button>`);
   }
-  /* passo 2 */
   function renderContrast(){
-    let rows=l.contrast.map(c=>`<tr><td class="pt">🇧🇷 ${c.pt}</td><td class="es">🇪🇸 ${c.es}</td></tr><tr><td colspan="2" class="tip">↳ ${c.tip}</td></tr>`).join("");
-    host.innerHTML=frame(`<h3>O que muda do português</h3><table class="contrast">${rows}</table>
-      <button class="btn" onclick="__go(2)">Agora vou treinar →</button>`);
+    let rows=l.contrast.map(c=>`<div class="ex-box"><div><span style="color:var(--bad)">🇧🇷 ${c.pt}</span> &nbsp;→&nbsp; <span style="color:var(--es);font-weight:700">🇪🇸 ${c.es}</span></div><div style="color:var(--muted);font-size:12.5px;margin-top:3px">↳ ${c.tip}</div></div>`).join("");
+    host.innerHTML=frame(`<h3>O que muda do português</h3>${rows}<button class="btn" onclick="__go(2)">Agora vou treinar →</button>`);
   }
-  /* passo 3 */
   function renderRecognize(){
     let qi=0,answered=false;
     function rq(){
       answered=false;const d=l.recognize[qi];
       let opts=d.opts.map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join("");
-      host.innerHTML=frame(`<div class="count">Reconhecer ${qi+1}/${l.recognize.length}</div>
+      host.innerHTML=frame(`<div class="count">Reconhecer · ${qi+1}/${l.recognize.length}</div>
         <div class="q">${d.q}</div>${opts}<div class="fb" id="rfb"></div>
         <button class="btn" id="rnext" style="display:none">Próximo →</button>`);
       host.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{
         if(answered)return;answered=true;const k=+btn.dataset.k;const fb=document.getElementById("rfb");
         host.querySelectorAll(".opt").forEach((x,xi)=>{if(xi===d.c)x.classList.add("correct");else if(xi===k)x.classList.add("wrong");});
-        fb.className="fb "+(k===d.c?"ok":"bad");fb.innerHTML=`<div class="ans">${k===d.c?"✓ Isso!":"A forma certa está em verde."}</div><div class="why">💡 ${d.why}</div>`;
+        const ok=k===d.c;
+        fb.className="fb "+(ok?"ok":"bad");
+        fb.innerHTML=`<div class="ans">${ok?"✓ Isso!":"❌ A forma correta é:"}</div>${ok?"":`<div class="correct">${d.opts[d.c]}</div>`}<div class="why">💡 ${d.why}</div>`;
         const nb=document.getElementById("rnext");nb.style.display="block";nb.textContent=(qi+1<l.recognize.length)?"Próximo →":"Ir produzir →";
         nb.onclick=()=>{qi++;if(qi<l.recognize.length)rq();else go(3);};
       });
     }
     rq();
   }
-  /* passo 4 */
   function renderProduce(){
     let qi=0,answered=false;
     function pq(){
       answered=false;const d=l.produce[qi];
-      const bb=l.builder.cols.map(c=>`<div class="bcol"><div class="h">${c.h}</div><div class="opts">${c.opts.replace(/·/g,"<b>·</b>")}</div></div>`).join("");
-      host.innerHTML=frame(`<div class="count">Produzir ${qi+1}/${l.produce.length}</div>
+      host.innerHTML=frame(`<div class="count">Produzir · ${qi+1}/${l.produce.length}</div>
         <div class="q">Traduza: <b>${d.pt}</b></div>
         <input id="pin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva em espanhol…">
         <button class="btn" id="pck">Verificar</button>
-        <details><summary>👀 ver a tabela de apoio</summary><div class="builder" style="margin-top:8px">${bb}</div></details>
+        <details><summary>👀 ver a cola (tabela)</summary>${builderHTML(l.builder)}</details>
         <div class="fb" id="pfb"></div>
         <button class="btn alt" id="pnext" style="display:none">Próximo →</button>`);
       const inp=document.getElementById("pin"),ck=document.getElementById("pck"),fb=document.getElementById("pfb"),nx=document.getElementById("pnext");
       inp.focus();
       ck.onclick=()=>{
-        if(answered){return;}if(!inp.value.trim())return;
-        answered=true;inp.disabled=true;ck.style.display="none";
+        if(answered)return;if(!inp.value.trim())return;answered=true;inp.disabled=true;ck.style.display="none";
         const m=matchAns(inp.value,d.a);
         fb.className="fb "+(m==="no"?"bad":"ok");
-        fb.innerHTML=(m==="exact"?`<div class="ans">✓ Perfeito!</div>`:m==="loose"?`<div class="ans">✓ Quase — confira o acento</div>`:`<div class="ans">Resposta: ${d.a[0]}</div>`)+`<div class="why">💡 ${d.why}</div>`;
+        fb.innerHTML=fbHTML(m,d.a[0],d.why);
         nx.style.display="block";nx.textContent=(qi+1<l.produce.length)?"Próximo →":"Última etapa →";
         nx.onclick=()=>{qi++;if(qi<l.produce.length)pq();else go(4);};
       };
@@ -409,17 +458,15 @@ function openLesson(i){
     }
     pq();
   }
-  /* passo 5 */
   function renderFree(){
-    host.innerHTML=frame(`<h3>Produza livre 🗣️</h3>
-      <p style="font-size:15px">${l.free.prompt}</p>
+    host.innerHTML=frame(`<h3>Produza livre 🗣️</h3><p style="font-size:15px">${l.free.prompt}</p>
       <textarea id="fin" placeholder="escreva (ou fale em voz alta) suas frases…"></textarea>
       <button class="btn alt" id="fsee">Ver frases-modelo</button>
       <div class="fb" id="ffb"></div>
       <button class="btn" id="fdone" style="display:none">✓ Concluir lição</button>`);
     document.getElementById("fsee").onclick=()=>{
       const fb=document.getElementById("ffb");fb.className="fb ok";
-      fb.innerHTML=`<div class="ans">Modelos para comparar:</div>`+l.free.models.map(m=>`<div class="why">✅ ${m}</div>`).join("");
+      fb.innerHTML=`<div class="ans">Modelos para comparar:</div>`+l.free.models.map(m=>`<div class="correct" style="font-size:15px">✅ ${m}</div>`).join("");
       document.getElementById("fdone").style.display="block";
     };
     document.getElementById("fdone").onclick=()=>{
@@ -432,12 +479,11 @@ function openLesson(i){
       if(next!==null)document.getElementById("gn").onclick=()=>openLesson(next);
     };
   }
-  window.__go=go;
   render();
 }
 window.renderHome=renderHome;window.openLesson=openLesson;
 
-/* ===== REVISAR (retrieval PT→ES) ===== */
+/* ===== REVISAR ===== */
 function startReview(){
   const host=document.getElementById("rev-host");
   const doneL=LESSONS.filter(l=>state.done.includes(l.id));
@@ -446,7 +492,7 @@ function startReview(){
   pool=shuffle(pool);let qi=0,answered=false;
   function rq(){
     answered=false;const d=pool[qi];
-    host.innerHTML=`<div class="count">Revisão ${qi+1}/${pool.length}</div>
+    host.innerHTML=`<div class="count">Revisão · ${qi+1}/${pool.length}</div>
       <div class="q">Traduza: <b>${d.pt}</b></div>
       <input id="rin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva em espanhol…">
       <button class="btn" id="rck">Verificar</button><div class="fb" id="rfb2"></div>
@@ -455,9 +501,7 @@ function startReview(){
     inp.focus();
     ck.onclick=()=>{
       if(answered)return;if(!inp.value.trim())return;answered=true;inp.disabled=true;ck.style.display="none";
-      const m=matchAns(inp.value,d.a);
-      fb.className="fb "+(m==="no"?"bad":"ok");
-      fb.innerHTML=(m==="exact"?`<div class="ans">✓ Perfeito!</div>`:m==="loose"?`<div class="ans">✓ Quase — confira o acento</div>`:`<div class="ans">Resposta: ${d.a[0]}</div>`)+`<div class="why">💡 ${d.why}</div>`;
+      const m=matchAns(inp.value,d.a);fb.className="fb "+(m==="no"?"bad":"ok");fb.innerHTML=fbHTML(m,d.a[0],d.why);
       nx.style.display="block";nx.textContent=(qi+1<pool.length)?"Próximo →":"Concluir";
       nx.onclick=()=>{qi++;if(qi<pool.length)rq();else host.innerHTML=`<div class="done-screen"><div class="big">🔁</div><h3>Revisão concluída!</h3><button class="btn" onclick="startReview()">Recomeçar</button></div>`;};
     };
