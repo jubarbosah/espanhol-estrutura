@@ -82,7 +82,7 @@
 </header>
 <nav>
   <button class="active" data-v="licoes">📚 Lições</button>
-  <button data-v="revisar">🔁 Revisar</button>
+  <button data-v="revisar">🧠 Treino</button>
 </nav>
 <main>
 <section class="view active" id="licoes">
@@ -90,9 +90,11 @@
   <div id="licao" style="display:none"></div>
 </section>
 <section class="view" id="revisar">
-  <h2>Revisar (produção)</h2>
-  <p class="sub">Treino de retrieval: traduza PT→ES as estruturas que você já viu. Errou? Você vê a forma certa para corrigir.</p>
-  <div class="card"><div id="rev-host"></div></div>
+  <h2>Treino esperto</h2>
+  <p class="sub">Repetição espaçada: foca no que você mais erra (tradução + caça ao portunhol das lições feitas). Errou? Você vê a forma certa.</p>
+  <div class="card"><div id="smart-stats"></div>
+    <button class="btn" onclick="startSmart()">▶️ Treinar 15 itens</button>
+    <div id="rev-host" style="margin-top:12px"></div></div>
 </section>
 </main>
 <footer>Método: produção ativa (output) + contraste PT↔ES. Progresso salvo no aparelho.</footer>
@@ -690,13 +692,56 @@ const LESSONS=[
   models:["¿Tomamos un cafecito?","A mí también me gusta el cine.","Hoy es un buen día."]}}
 ];
 
+/* ===== BANHO DE INPUT (narrow reading) por lição ===== */
+const READINGS={
+ "0.1":[["Hoy estoy en casa con mi hija.","Hoje estou em casa com minha filha."],["Quiero salir, pero hace frío y no tengo ganas.","Quero sair, mas faz frio e não tenho vontade."],["Tomamos café o té y descansamos.","Tomamos café ou chá e descansamos."]],
+ "0.2":[["Me despierto a las siete y me ducho.","Eu me acordo às sete e tomo banho."],["Después me visto y voy a trabajar.","Depois me visto e vou trabalhar."],["Por la noche me acuesto temprano.","À noite me deito cedo."]],
+ "0.3":[["Nosotros vivimos en Florianópolis.","A gente mora em Florianópolis."],["¿Tú quieres venir con nosotros?","Você quer vir com a gente?"],["Si usted prefiere, hablamos después.","Se o senhor preferir, falamos depois."]],
+ "1.1":[["Soy madre y hoy estoy un poco cansada.","Sou mãe e hoje estou um pouco cansada."],["Tengo hambre y tengo prisa.","Estou com fome e estou com pressa."],["Hace frío, pero hay una cafetería cerca.","Faz frio, mas tem uma cafeteria perto."]],
+ "1.2":[["Me gusta el café por la mañana.","Gosto de café de manhã."],["Me gustan las películas antiguas.","Gosto dos filmes antigos."],["A mi hija le gusta caminar por la playa.","Minha filha gosta de caminhar na praia."]],
+ "1.3":[["La leche está en la nevera.","O leite está na geladeira."],["Tengo un problema con el ordenador.","Tenho um problema com o computador."],["Me gusta el fútbol; voy al estadio los domingos.","Gosto de futebol; vou ao estádio aos domingos."]],
+ "1.4":[["Ahora estoy trabajando en casa.","Agora estou trabalhando em casa."],["Hoy tengo que ir al consulado.","Hoje tenho que ir ao consulado."],["Por la noche voy a descansar un poco.","À noite vou descansar um pouco."]],
+ "2.1":[["Suelo levantarme temprano.","Costumo me levantar cedo."],["Acabo de desayunar con mi hija.","Acabei de tomar café com minha filha."],["Después vuelvo a estudiar español.","Depois volto a estudar espanhol."]],
+ "2.2":[["Llevo tres años viviendo en Florianópolis.","Faz três anos que moro em Florianópolis."],["Hace una hora que te espero.","Faz uma hora que te espero."],["Llegué a esta ciudad hace mucho tiempo.","Cheguei nesta cidade faz muito tempo."]],
+ "2.3":[["Ya terminé el trabajo de hoy.","Já terminei o trabalho de hoje."],["Todavía no he comido nada.","Ainda não comi nada."],["Ya no vivo en São Paulo.","Já não moro em São Paulo."]],
+ "3.1":[["¿Cuál es tu nombre?","Qual é o seu nome?"],["¿Dónde está la estación y cuánto cuesta el billete?","Onde fica a estação e quanto custa a passagem?"],["¿Cómo estás hoy?","Como você está hoje?"]],
+ "3.2":[["Por la noche me gusta ver una película.","À noite gosto de ver um filme."],["A veces le pregunto la hora a alguien.","Às vezes pergunto a hora a alguém."],["Estoy buscando trabajo y voy a intentarlo otra vez.","Estou procurando trabalho e vou tentar de novo."]],
+ "3.3":[["El finde me quedo en casa.","No fim de semana fico em casa."],["Cuando te veo, me pongo feliz.","Quando te vejo, fico feliz."],["¿Quedamos el sábado por la tarde?","Combinamos sábado à tarde?"]],
+ "3.4":[["Este regalo es para mi hija.","Este presente é para minha filha."],["Estudio español para mejorar.","Estudo espanhol para melhorar."],["Gracias por venir; por la noche vemos una serie.","Obrigada por vir; à noite vemos uma série."]],
+ "3.5":[["No quiero nada, gracias.","Não quero nada, obrigada."],["Lo importante es practicar todos los días.","O importante é praticar todos os dias."],["No entiendo lo que dice esa señora.","Não entendo o que aquela senhora diz."]],
+ "4.1":[["Veo a mi madre los domingos.","Vejo minha mãe aos domingos."],["Pienso en ti y sueño con viajar.","Penso em você e sonho em viajar."],["Todo depende de la respuesta del consulado.","Tudo depende da resposta do consulado."]],
+ "4.2":[["Esta ciudad es más tranquila que São Paulo.","Esta cidade é mais tranquila que São Paulo."],["El café de aquí es tan bueno como el de allá.","O café daqui é tão bom quanto o de lá."],["Tengo mucho trabajo, pero estoy muy contenta.","Tenho muito trabalho, mas estou muito contente."]],
+ "4.3":[["¿Tomamos un cafecito?","Tomamos um cafezinho?"],["A mí también me gusta el cine.","Eu também gosto de cinema."],["Hoy es un buen día para un gran paseo.","Hoje é um bom dia para um grande passeio."]]
+};
+/* ===== CAÇA AO PORTUNHOL por lição ===== */
+const CAZAS={
+ "0.1":[{bad:"Estoy em casa com mi hija.",fix:["estoy en casa con mi hija"],why:"em→en, com→con."},{bad:"Quiero café e leche.",fix:["quiero café y leche"],why:"e→y."},{bad:"Es barato mas bueno.",fix:["es barato pero bueno"],why:"mas→pero."},{bad:"¿Té ou café?",fix:["¿té o café?","té o café"],why:"ou→o."}],
+ "0.2":[{bad:"Despiértome a las siete.",fix:["me despierto a las siete"],why:"verbo conjugado → pronome antes."},{bad:"Ella llámase Ana.",fix:["ella se llama ana","se llama ana"],why:"se llama (antes)."},{bad:"Voy a te llamar mañana.",fix:["voy a llamarte mañana"],why:"infinitivo → pronome colado."}],
+ "0.3":[{bad:"La gente vive aquí. (= nós)",fix:["nosotros vivimos aquí","vivimos aquí"],why:"'a gente' → nosotros + verbo de nós."},{bad:"¿Usted quieres un café?",fix:["¿usted quiere un café?","usted quiere un café"],why:"usted → verbo de ele: quiere."},{bad:"¿Vosotros tienen tiempo?",fix:["¿vosotros tenéis tiempo?","vosotros tenéis tiempo"],why:"vosotros → tenéis."}],
+ "1.1":[{bad:"Estoy con hambre.",fix:["tengo hambre"],why:"sensação → tener."},{bad:"Está frío hoy. (clima)",fix:["hace frío hoy","hace frío"],why:"clima → hacer."},{bad:"¿Tiene una farmacia cerca?",fix:["¿hay una farmacia cerca?","hay una farmacia cerca"],why:"existir → hay."},{bad:"Soy cansada.",fix:["estoy cansada"],why:"estado → estar."}],
+ "1.2":[{bad:"Yo gusto de café.",fix:["me gusta el café"],why:"inverte: me gusta el café."},{bad:"Me gusta los dulces.",fix:["me gustan los dulces"],why:"plural → gustan."},{bad:"Mi cabeza duele.",fix:["me duele la cabeza"],why:"me duele la cabeza."}],
+ "1.3":[{bad:"El leche está en la nevera.",fix:["la leche está en la nevera"],why:"leche é feminino: la leche."},{bad:"Tengo una problema.",fix:["tengo un problema"],why:"problema é masculino."},{bad:"Me gusta música.",fix:["me gusta la música"],why:"gosto pede artigo."}],
+ "1.4":[{bad:"Voy viajar mañana.",fix:["voy a viajar mañana"],why:"voy A viajar."},{bad:"Tengo trabajar hoy.",fix:["tengo que trabajar hoy"],why:"tengo QUE trabajar."},{bad:"Estoy comendo.",fix:["estoy comiendo"],why:"gerúndio -iendo."}],
+ "2.1":[{bad:"Acabé de llegar. (passado recente)",fix:["acabo de llegar"],why:"acabar de no presente."},{bad:"Vuelvo intentar.",fix:["vuelvo a intentar"],why:"volver A + inf."},{bad:"Uso trabajar por la mañana. (costumar)",fix:["suelo trabajar por la mañana"],why:"costumar → soler."}],
+ "2.2":[{bad:"Hago dos años que vivo aquí.",fix:["hace dos años que vivo aquí","llevo dos años viviendo aquí"],why:"hace... que / llevar+gerúndio."},{bad:"Llegué atrás tres días.",fix:["llegué hace tres días"],why:"'atrás' → hace."},{bad:"Hay una hora que espero.",fix:["hace una hora que espero"],why:"hace... que (não 'hay')."}],
+ "2.3":[{bad:"Todavía llegué.",fix:["ya llegué"],why:"já → ya."},{bad:"Ya no he comido. (= ainda não)",fix:["todavía no he comido"],why:"ainda não → todavía no."},{bad:"Todavía no vivo allí. (= já não)",fix:["ya no vivo allí"],why:"já não → ya no."}],
+ "3.1":[{bad:"¿Qué es tu nombre?",fix:["¿cuál es tu nombre?","cuál es tu nombre"],why:"qual é → cuál es."},{bad:"¿Donde vives?",fix:["¿dónde vives?","dónde vives"],why:"interrogativo com acento: dónde."},{bad:"¿Cuanto cuesta?",fix:["¿cuánto cuesta?","cuánto cuesta"],why:"com acento: cuánto."}],
+ "3.2":[{bad:"Voy a asistir una película.",fix:["voy a ver una película"],why:"assistir filme → ver."},{bad:"¿Puedo pedirte la hora?",fix:["¿puedo preguntarte la hora?","puedo preguntarte la hora"],why:"perguntar → preguntar."},{bad:"Estoy buscando por trabajo.",fix:["estoy buscando trabajo"],why:"buscar sem 'por'."},{bad:"Voy a tentar otra vez.",fix:["voy a intentar otra vez"],why:"tentar → intentar."}],
+ "3.3":[{bad:"Hoy me pongo en casa. (= fico)",fix:["hoy me quedo en casa","me quedo en casa"],why:"permanecer → quedarse."},{bad:"Me quedo nervioso en los exámenes.",fix:["me pongo nervioso en los exámenes"],why:"mudar de estado → ponerse."},{bad:"¿Nos quedamos mañana? (= combinar)",fix:["¿quedamos mañana?","quedamos mañana"],why:"combinar → quedar."}],
+ "3.4":[{bad:"Esto es por ti. (presente)",fix:["esto es para ti"],why:"destinatário → para."},{bad:"Gracias para la ayuda.",fix:["gracias por la ayuda"],why:"causa → por."},{bad:"Estudio por aprender.",fix:["estudio para aprender"],why:"objetivo → para."},{bad:"Para la mañana trabajo.",fix:["por la mañana trabajo","trabajo por la mañana"],why:"tempo difuso → por."}],
+ "3.5":[{bad:"No quiero algo.",fix:["no quiero nada"],why:"dupla negação: no quiero nada."},{bad:"El importante es practicar.",fix:["lo importante es practicar"],why:"lo + adjetivo."},{bad:"No entiendo el que dices.",fix:["no entiendo lo que dices"],why:"o que → lo que."}],
+ "4.1":[{bad:"Veo mi madre los domingos.",fix:["veo a mi madre los domingos"],why:"objeto pessoa → 'a' pessoal."},{bad:"Pienso de ti.",fix:["pienso en ti"],why:"pensar EN."},{bad:"Sueño en viajar.",fix:["sueño con viajar"],why:"soñar CON."},{bad:"Depende en ti.",fix:["depende de ti"],why:"depender DE."}],
+ "4.2":[{bad:"Tengo muy trabajo.",fix:["tengo mucho trabajo"],why:"muito + substantivo → mucho."},{bad:"¡Mucho bueno!",fix:["¡muy bueno!","muy bueno"],why:"muito + adjetivo → muy."},{bad:"Es más bueno que el otro.",fix:["es mejor que el otro"],why:"melhor → mejor."}],
+ "4.3":[{bad:"Un bueno día.",fix:["un buen día"],why:"bueno → buen antes do substantivo."},{bad:"Un grande amigo.",fix:["un gran amigo"],why:"grande → gran antes do substantivo."},{bad:"Yo también. (resposta a algo negativo)",fix:["yo tampoco"],why:"também não → tampoco."}]
+};
+
 /* ===== NAV ===== */
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   b.classList.add("active");document.getElementById(b.dataset.v).classList.add("active");window.scrollTo(0,0);
   if(b.dataset.v==="licoes")renderHome();
-  if(b.dataset.v==="revisar")startReview();
+  if(b.dataset.v==="revisar")renderSmartStats();
 });
 
 /* ===== HOME ===== */
@@ -732,7 +777,7 @@ function builderHTML(b,compact){
 }
 
 /* ===== LIÇÃO: 5 passos ===== */
-const STEP_NAMES=["Ver o padrão","Contraste","Reconhecer","Produzir com cola","Produzir livre"];
+const STEP_NAMES=["Ver o padrão","Contraste","Reconhecer","Caça ao portunhol","Produzir com cola","Produzir livre"];
 function openLesson(i){
   const l=LESSONS[i];let step=0;window.scrollTo(0,0);
   document.getElementById("home").style.display="none";
@@ -745,13 +790,15 @@ function openLesson(i){
   }
   function go(n){step=n;render();window.scrollTo(0,0);}
   window.__go=go;
-  function render(){[renderModel,renderContrast,renderRecognize,renderProduce,renderFree][step]();}
+  function render(){[renderModel,renderContrast,renderRecognize,renderCaza,renderProduce,renderFree][step]();}
 
   function renderModel(){
     const b=l.builder;
     let ex=`<div class="examples">`+b.examples.map(e=>`<div class="e"><div class="es">✅ ${e[0]}</div><div class="pt">${e[1]}</div></div>`).join("")+`</div>`;
+    const rd=READINGS[l.id];
+    let read=rd?`<div class="steplabel" style="margin-top:16px">📖 Banho de input — leia (e leia em voz alta)</div><div class="examples">`+rd.map(r=>`<div class="e"><div class="es">${r[0]}</div><div class="pt">${r[1]}</div></div>`).join("")+`</div>`:"";
     host.innerHTML=frame(`<h3>${l.title}</h3><div class="rule">📌 <b>Regra de ouro:</b> ${b.rule}</div>
-      ${builderHTML(b)}${ex}<div class="ex-box">💡 ${b.note}</div>
+      ${builderHTML(b)}${ex}<div class="ex-box">💡 ${b.note}</div>${read}
       <button class="btn" onclick="__go(1)">Entendi o padrão →</button>`);
   }
   function renderContrast(){
@@ -778,6 +825,30 @@ function openLesson(i){
     }
     rq();
   }
+  function renderCaza(){
+    const list=CAZAS[l.id]||[];
+    if(!list.length){go(4);return;}
+    let qi=0,answered=false;
+    function cq(){
+      answered=false;const d=list[qi];
+      host.innerHTML=frame(`<div class="count">Caça ao portunhol · ${qi+1}/${list.length}</div>
+        <p style="font-size:13.5px;color:var(--muted)">Esta frase tem um erro típico de brasileiro. Escreva a forma correta:</p>
+        <div class="q" style="color:var(--bad)">❌ ${d.bad}</div>
+        <input id="cin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva a versão correta…">
+        <button class="btn" id="cck">Verificar</button><div class="fb" id="cfb"></div>
+        <button class="btn alt" id="cnx" style="display:none">Próximo →</button>`);
+      const inp=document.getElementById("cin"),ck=document.getElementById("cck"),fb=document.getElementById("cfb"),nx=document.getElementById("cnx");
+      inp.focus();
+      ck.onclick=()=>{
+        if(answered)return;if(!inp.value.trim())return;answered=true;inp.disabled=true;ck.style.display="none";
+        const m=matchAns(inp.value,d.fix);fb.className="fb "+(m==="no"?"bad":"ok");fb.innerHTML=fbHTML(m,d.fix[0],d.why);
+        nx.style.display="block";nx.textContent=(qi+1<list.length)?"Próximo →":"Ir produzir →";
+        nx.onclick=()=>{qi++;if(qi<list.length)cq();else go(4);};
+      };
+      inp.addEventListener("keydown",e=>{if(e.key==="Enter")ck.click();});
+    }
+    cq();
+  }
   function renderProduce(){
     let qi=0,answered=false;
     function pq(){
@@ -797,7 +868,7 @@ function openLesson(i){
         fb.className="fb "+(m==="no"?"bad":"ok");
         fb.innerHTML=fbHTML(m,d.a[0],d.why);
         nx.style.display="block";nx.textContent=(qi+1<l.produce.length)?"Próximo →":"Última etapa →";
-        nx.onclick=()=>{qi++;if(qi<l.produce.length)pq();else go(4);};
+        nx.onclick=()=>{qi++;if(qi<l.produce.length)pq();else go(5);};
       };
       inp.addEventListener("keydown",e=>{if(e.key==="Enter")ck.click();});
     }
@@ -828,27 +899,56 @@ function openLesson(i){
 }
 window.renderHome=renderHome;window.openLesson=openLesson;
 
-/* ===== REVISAR ===== */
-function startReview(){
-  const host=document.getElementById("rev-host");
-  const doneL=LESSONS.filter(l=>state.done.includes(l.id));
-  if(!doneL.length){host.innerHTML=`<p class="sub">Conclua ao menos uma lição para liberar a revisão.</p>`;return;}
-  let pool=[];doneL.forEach(l=>l.produce.forEach(p=>pool.push(p)));
-  pool=shuffle(pool);let qi=0,answered=false;
+/* ===== TREINO ESPERTO (SRS) ===== */
+const SRS_KEY="esp_estrutura_srs_v1";
+let srs={};
+try{const s=JSON.parse(localStorage.getItem(SRS_KEY));if(s&&typeof s==="object")srs=s;}catch(e){}
+function srsSave(){localStorage.setItem(SRS_KEY,JSON.stringify(srs));}
+function srsUpdate(id,res){const cur=srs[id]?srs[id].box:1;let box;if(res==="exact")box=Math.min(5,cur+1);else if(res==="loose")box=Math.max(1,cur);else box=1;srs[id]={box,seen:(srs[id]?srs[id].seen:0)+1};srsSave();}
+function smartPool(){
+  const out=[];
+  LESSONS.filter(l=>state.done.includes(l.id)).forEach(l=>{
+    (l.produce||[]).forEach((p,i)=>out.push({id:"p_"+l.id+"_"+i,prompt:"Traduza: <b>"+p.pt+"</b>",a:p.a,why:p.why}));
+    (CAZAS[l.id]||[]).forEach((c,i)=>out.push({id:"c_"+l.id+"_"+i,prompt:"Corrija: <b style=\"color:var(--bad)\">"+c.bad+"</b>",a:c.fix,why:c.why}));
+  });
+  return out;
+}
+function renderSmartStats(){
+  const el=document.getElementById("smart-stats");if(!el)return;
+  const pool=smartPool();
+  if(!pool.length){el.innerHTML=`<p class="sub">Conclua ao menos uma lição para liberar o treino.</p>`;return;}
+  let fr=0,ap=0,dom=0,nov=0;
+  pool.forEach(it=>{const s=srs[it.id];if(!s)nov++;else if(s.box>=5)dom++;else if(s.box<=1)fr++;else ap++;});
+  el.innerHTML=`<div class="ex-box" style="margin-top:0">📊 De ${pool.length} itens: <b style="color:var(--ok)">${dom}</b> dominados · <b>${ap}</b> aprendendo · <b style="color:var(--bad)">${fr}</b> frágeis · <b>${nov}</b> novos.</div>`;
+}
+function startSmart(){
+  const pool=smartPool();if(!pool.length){renderSmartStats();return;}
+  pool.forEach(it=>{const s=srs[it.id];it._p=s?s.box:1.5;});
+  pool.sort((a,b)=>a._p-b._p||Math.random()-0.5);
+  const list=pool.slice(0,15);
+  runSmartSession(list,document.getElementById("rev-host"),()=>{
+    renderSmartStats();
+    document.getElementById("rev-host").innerHTML=`<div class="done-screen"><div class="big">🧠</div><h3>Rodada concluída!</h3><p class="sub">Estatísticas atualizadas. O treino segue focando no que está frágil.</p><button class="btn" onclick="startSmart()">Mais 15</button></div>`;
+  });
+}
+window.startSmart=startSmart;
+function runSmartSession(list,host,onDone){
+  let qi=0,answered=false;
   function rq(){
-    answered=false;const d=pool[qi];
-    host.innerHTML=`<div class="count">Revisão · ${qi+1}/${pool.length}</div>
-      <div class="q">Traduza: <b>${d.pt}</b></div>
-      <input id="rin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva em espanhol…">
-      <button class="btn" id="rck">Verificar</button><div class="fb" id="rfb2"></div>
-      <button class="btn alt" id="rnx" style="display:none">Próximo →</button>`;
-    const inp=document.getElementById("rin"),ck=document.getElementById("rck"),fb=document.getElementById("rfb2"),nx=document.getElementById("rnx");
+    answered=false;const d=list[qi];
+    host.innerHTML=`<div class="count">Treino · ${qi+1}/${list.length}</div>
+      <div class="q">${d.prompt}</div>
+      <input id="sin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva em espanhol…">
+      <button class="btn" id="sck">Verificar</button><div class="fb" id="sfb"></div>
+      <button class="btn alt" id="snx" style="display:none">Próximo →</button>`;
+    const inp=document.getElementById("sin"),ck=document.getElementById("sck"),fb=document.getElementById("sfb"),nx=document.getElementById("snx");
     inp.focus();
     ck.onclick=()=>{
       if(answered)return;if(!inp.value.trim())return;answered=true;inp.disabled=true;ck.style.display="none";
-      const m=matchAns(inp.value,d.a);fb.className="fb "+(m==="no"?"bad":"ok");fb.innerHTML=fbHTML(m,d.a[0],d.why);
-      nx.style.display="block";nx.textContent=(qi+1<pool.length)?"Próximo →":"Concluir";
-      nx.onclick=()=>{qi++;if(qi<pool.length)rq();else host.innerHTML=`<div class="done-screen"><div class="big">🔁</div><h3>Revisão concluída!</h3><button class="btn" onclick="startReview()">Recomeçar</button></div>`;};
+      const m=matchAns(inp.value,d.a);srsUpdate(d.id,m);
+      fb.className="fb "+(m==="no"?"bad":"ok");fb.innerHTML=fbHTML(m,d.a[0],d.why);
+      nx.style.display="block";nx.textContent=(qi+1<list.length)?"Próximo →":"Concluir";
+      nx.onclick=()=>{qi++;if(qi<list.length)rq();else onDone();};
     };
     inp.addEventListener("keydown",e=>{if(e.key==="Enter")ck.click();});
   }
