@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a2336">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Estructura · Engenharia da Fala</title>
+<style>
+  :root{
+    --bg:#0f172a;--panel:#1e293b;--panel2:#273449;--ink:#e2e8f0;--muted:#94a3b8;
+    --accent:#34d399;--accent2:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--line:#334155;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:linear-gradient(160deg,#0b1220,#0f172a);color:var(--ink);line-height:1.6;overflow-x:hidden}
+  header{padding:16px 16px 11px;border-bottom:1px solid var(--line);background:#1a2336;padding-top:max(16px,env(safe-area-inset-top))}
+  header h1{margin:0;font-size:18px} header p{margin:3px 0 0;color:var(--muted);font-size:12.5px}
+  nav{display:flex;gap:8px;padding:9px 12px;background:#0c1424;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  nav button{flex:1;background:transparent;border:1px solid var(--line);color:var(--muted);padding:12px;border-radius:11px;cursor:pointer;font-size:15px;font-weight:700}
+  nav button.active{background:var(--accent);color:#06281c;border-color:var(--accent)}
+  main{max-width:720px;margin:0 auto;padding:18px 14px 90px}
+  .view{display:none}.view.active{display:block;animation:f .2s}@keyframes f{from{opacity:0}to{opacity:1}}
+  h2{font-size:19px;margin:0 0 4px}.sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+  .stagehead{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);font-weight:800;margin:22px 0 8px}
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .topbar .bar{flex:1;height:9px;background:#0c1424;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .topbar .bar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:.4s}
+  .topbar .pct{font-size:13px;color:var(--muted);min-width:40px;text-align:right}
+  .lesson{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin:9px 0;cursor:pointer}
+  .lesson:active{transform:scale(.99)}.lesson.locked{opacity:.45}
+  .lesson .num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;background:var(--panel2);border:2px solid var(--line);color:var(--muted)}
+  .lesson.done .num{background:var(--ok);border-color:var(--ok);color:#06281c}
+  .lesson.avail .num{background:var(--accent2);border-color:var(--accent2);color:#062a3b}
+  .lesson .t{font-weight:700;font-size:15px}.lesson .s{font-size:12.5px;color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0}
+  .card h3{margin:0 0 8px;font-size:17px;color:var(--accent)}
+  .back{background:none;border:none;color:var(--accent2);font-size:15px;cursor:pointer;padding:8px 0;margin-bottom:4px}
+  .stepbar{display:flex;gap:5px;margin:8px 0 14px}
+  .stepbar div{flex:1;height:6px;border-radius:3px;background:#0c1424;border:1px solid var(--line)}
+  .stepbar div.on{background:var(--accent);border-color:var(--accent)}
+  .steplabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);font-weight:800;margin-bottom:6px}
+  .builder{background:#0c1424;border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+  .bcol{margin:8px 0}.bcol .h{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:3px}
+  .bcol .opts{font-size:15.5px}.bcol .opts b{color:#5eead4}
+  .examples{margin:10px 0}.examples div{font-size:15px;padding:4px 0;border-bottom:1px dashed #24344d}
+  .examples div:last-child{border:none}
+  .contrast{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0}
+  .contrast td{border:1px solid var(--line);padding:9px 10px;vertical-align:top}
+  .contrast .pt{color:var(--bad)}.contrast .es{color:var(--ok);font-weight:600}
+  .contrast .tip{color:var(--muted);font-size:12.5px}
+  .ex-box{background:#0c1424;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:9px 0;font-size:14.5px}
+  .hl{color:var(--accent2);font-weight:700}
+  .q{font-size:16.5px;margin:6px 0 12px}.q .blank{color:var(--accent);font-weight:700}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:13px 14px;border-radius:11px;margin:7px 0;cursor:pointer;font-size:15.5px}
+  .opt.correct{background:#10241c;border-color:var(--ok);color:var(--ok)}
+  .opt.wrong{background:#2a1418;border-color:var(--bad);color:var(--bad)}
+  input,textarea{width:100%;background:#0c1424;border:2px solid var(--line);color:var(--ink);padding:13px;border-radius:10px;font-size:17px;font-family:inherit}
+  input{text-align:center}textarea{min-height:90px;line-height:1.5}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  .btn{display:block;width:100%;background:var(--accent);color:#06281c;border:none;padding:15px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;margin-top:13px;touch-action:manipulation}
+  .btn:active{transform:scale(.99)}.btn.alt{background:var(--accent2);color:#062a3b}.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .fb{margin-top:12px;padding:13px;border-radius:11px;font-size:14.5px;display:none}
+  .fb.ok{background:#10241c;border:1px solid var(--ok);display:block}.fb.bad{background:#2a1418;border:1px solid var(--bad);display:block}
+  .fb .ans{font-size:16px;font-weight:800;margin-bottom:3px}.fb .why{margin-top:6px}
+  .count{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  details{background:#0c1424;border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin:10px 0;font-size:14px}
+  summary{cursor:pointer;color:var(--accent2);font-weight:700}
+  .done-screen{text-align:center;padding:26px 10px}.done-screen .big{font-size:46px}.done-screen h3{color:var(--ok);font-size:21px;margin:10px 0}
+  .method{background:#15243a;border-left:3px solid var(--accent2);padding:10px 14px;border-radius:8px;font-size:13.5px;margin:10px 0}
+  footer{text-align:center;color:#475569;font-size:12px;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧩 Estructura · Engenharia da Fala</h1>
+  <p>Entender a estrutura → produzir. Uma cilada por vez.</p>
+</header>
+<nav>
+  <button class="active" data-v="licoes">📚 Lições</button>
+  <button data-v="revisar">🔁 Revisar</button>
+</nav>
+<main>
+<section class="view active" id="licoes">
+  <div id="home"></div>
+  <div id="licao" style="display:none"></div>
+</section>
+<section class="view" id="revisar">
+  <h2>Revisar (produção)</h2>
+  <p class="sub">Treino de retrieval: traduza PT→ES as estruturas que você já viu. É o que fixa a fala.</p>
+  <div class="card"><div id="rev-host"></div></div>
+</section>
+</main>
+<footer>Método baseado em produção ativa (output) + contraste PT↔ES. Progresso salvo no aparelho.</footer>
+
+<script>
+/* ===== HELPERS ===== */
+const NORM=s=>s.toLowerCase().trim().replace(/[¿?¡!.,;:"']/g,"").replace(/\s+/g," ");
+const STRIP=s=>NORM(s).normalize("NFD").replace(/[̀-ͯ]/g,"");
+function matchAns(g,arr){const a=NORM(g),b=STRIP(g);for(const x of arr)if(a===NORM(x))return"exact";for(const x of arr)if(b===STRIP(x))return"loose";return"no";}
+const SAVE="esp_estrutura_v1";
+let state={done:[]};
+try{const s=JSON.parse(localStorage.getItem(SAVE));if(s&&Array.isArray(s.done))state=s;}catch(e){}
+function save(){localStorage.setItem(SAVE,JSON.stringify(state));}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ===== CONTEÚDO: 7 LIÇÕES (Estágios 0 e 1) ===== */
+const LESSONS=[
+/* ---------- ESTÁGIO 0 ---------- */
+{id:"0.1",stage:"Estágio 0 · Os fios que ligam tudo",title:"As palavrinhas que ligam",goal:"ligar ideias sem o português vazar",
+ builder:{lead:"Combine para formar frases:",cols:[
+   {h:"começo",opts:"Estoy · Voy · Quiero"},
+   {h:"ligação (com/em/a)",opts:"en casa · con mi hija · al cine"},
+   {h:"conector",opts:"y (e) · pero (mas) · porque"},
+   {h:"fim",opts:"descanso · no tengo tiempo · me gusta"}],
+   examples:["Estoy en casa y descanso.","Voy al cine con mi hija.","Quiero café pero no tengo tiempo."],
+   note:"y = e · o = ou · pero = mas · con = com · en = em"},
+ contrast:[
+   {pt:"café e leite",es:"café y leche",tip:"e → y"},
+   {pt:"chá ou café",es:"té o café",tip:"ou → o"},
+   {pt:"barato mas bom",es:"barato pero bueno",tip:"mas → pero"},
+   {pt:"com minha filha",es:"con mi hija",tip:"com → con"},
+   {pt:"em casa",es:"en casa",tip:"em → en"},
+   {pt:"pai e filho",es:"padre e hijo",tip:"y vira 'e' antes de som de i-"}],
+ recognize:[
+   {q:"café ___ leche (e)",opts:["i","y","e"],c:1,why:"e → y. (só vira 'e' antes de som i-)"},
+   {q:"padre ___ hijo (e)",opts:["y","e"],c:1,why:"Antes de palavra com som de 'i', y vira e: padre e hijo."},
+   {q:"barato ___ bueno (mas)",opts:["mas","pero","sino"],c:1,why:"mas → pero."},
+   {q:"Estoy ___ casa (em)",opts:["en","em","na"],c:0,why:"em → en."},
+   {q:"Voy ___ mi hija (com)",opts:["com","con","co"],c:1,why:"com → con."}],
+ produce:[
+   {pt:"Quero café e leite.",a:["quiero café y leche"],why:"e → y."},
+   {pt:"Estou em casa com minha filha.",a:["estoy en casa con mi hija"],why:"em→en, com→con."},
+   {pt:"É barato mas bom.",a:["es barato pero bueno"],why:"mas → pero."},
+   {pt:"Chá ou café?",a:["té o café","¿té o café?"],why:"ou → o."}],
+ free:{prompt:"Escreva 2 frases dizendo onde você está e o que está fazendo, ligando com y / pero / con / en.",
+   models:["Estoy en casa y estoy descansando.","Quiero salir pero hace frío.","Estoy con mi hija en el parque."]}},
+
+{id:"0.2",stage:"Estágio 0 · Os fios que ligam tudo",title:"Onde entra o pronome",goal:"usar me / te / lo / la / se na hora certa",
+ builder:{lead:"Com verbo conjugado, o pronome vem ANTES:",cols:[
+   {h:"pronome",opts:"me · te · lo · la · se"},
+   {h:"verbo",opts:"despierto · llamo · veo · conozco · llama"}],
+   examples:["me despierto (eu me acordo)","te llamo (eu te ligo)","lo veo (eu o vejo)","se llama Ana (ela se chama Ana)"],
+   note:"Conjugado → ANTES. Infinitivo/imperativo → COLADO (llamarte, ¡llámame!)."},
+ contrast:[
+   {pt:"desperto-me / me desperto",es:"me despierto",tip:"verbo conjugado → pronome ANTES"},
+   {pt:"vou te ligar",es:"voy a llamarte",tip:"infinitivo → pronome COLADO no fim"},
+   {pt:"me dá isso",es:"dámelo",tip:"imperativo afirmativo → colado: dá+me+lo"},
+   {pt:"não me ligue",es:"no me llames",tip:"imperativo negativo → ANTES de novo"},
+   {pt:"dei o livro a ele",es:"se lo di",tip:"le + lo vira 'se lo' (nunca 'le lo')"}],
+ recognize:[
+   {q:"Eu me acordo às sete.",opts:["despiértome a las siete","me despierto a las siete"],c:1,why:"Verbo conjugado → pronome antes: me despierto."},
+   {q:"Vou te ligar amanhã.",opts:["voy a llamarte mañana","voy a te llamar mañana"],c:0,why:"No infinitivo o pronome cola no fim: llamarte."},
+   {q:"Me passa o sal! (ordem)",opts:["me pasa la sal","pásame la sal"],c:1,why:"Imperativo afirmativo → colado: pásame."},
+   {q:"Ela se chama Ana.",opts:["se llama Ana","llámase Ana"],c:0,why:"Conjugado → antes: se llama."}],
+ produce:[
+   {pt:"Eu me levanto cedo.",a:["me levanto temprano"],why:"Pronome antes: me levanto."},
+   {pt:"Ela se chama Júnia.",a:["se llama júnia","se llama junia"],why:"se llama."},
+   {pt:"Vou me deitar.",a:["voy a acostarme","me voy a acostar"],why:"Infinitivo → acostarme (ou 'me voy a acostar')."},
+   {pt:"Me passa a água.",a:["pásame el agua","pásame la água"],why:"Imperativo → pásame."}],
+ free:{prompt:"Conte sua rotina da manhã com 2-3 verbos reflexivos (me despierto, me ducho, me visto...).",
+   models:["Me despierto a las siete y me ducho.","Después me visto y desayuno con mi hija."]}},
+
+{id:"0.3",stage:"Estágio 0 · Os fios que ligam tudo",title:"\"A gente\" e o tratamento",goal:"falar 'nós' e tratar as pessoas certo",
+ builder:{lead:"'A gente' não existe em espanhol:",cols:[
+   {h:"PT-BR",opts:"a gente · você · o senhor · vocês (Espanha)"},
+   {h:"Espanhol",opts:"nosotros · tú · usted · vosotros"},
+   {h:"exemplo",opts:"nosotros vamos · tú quieres · usted quiere · vosotros queréis"}],
+   examples:["A gente vai → Nosotros vamos","Você quer? → ¿Tú quieres?","O senhor pode? → ¿Usted puede? (verbo de 'ele')"],
+   note:"usted/ustedes usam a forma de ele/eles. vosotros = 'vocês' na Espanha."},
+ contrast:[
+   {pt:"a gente vai (= nós)",es:"nosotros vamos",tip:"'a gente' → nosotros + verbo de nós"},
+   {pt:"você quer (informal)",es:"tú quieres",tip:"informal → tú"},
+   {pt:"o senhor quer (formal)",es:"usted quiere",tip:"formal → usted (verbo de 'ele'!)"},
+   {pt:"vocês querem (Espanha)",es:"vosotros queréis",tip:"vocês → vosotros na Espanha"}],
+ recognize:[
+   {q:"A gente mora em Florianópolis.",opts:["la gente vive en Florianópolis","nosotros vivimos en Florianópolis"],c:1,why:"'A gente' (=nós) → nosotros vivimos."},
+   {q:"Você quer um café? (a um amigo)",opts:["¿usted quiere un café?","¿tú quieres un café?"],c:1,why:"Informal → tú quieres."},
+   {q:"O senhor pode esperar? (formal)",opts:["¿usted puede esperar?","¿tú puedes esperar?"],c:0,why:"Formal → usted (forma de 'ele': puede)."},
+   {q:"Vocês têm tempo? (Espanha)",opts:["¿vosotros tenéis tiempo?","¿vosotros tienen tiempo?"],c:0,why:"vosotros → tenéis."}],
+ produce:[
+   {pt:"A gente vai à praia hoje.",a:["nosotros vamos a la playa hoy","vamos a la playa hoy"],why:"'A gente' → nosotros vamos."},
+   {pt:"Vocês querem café? (Espanha)",a:["¿vosotros queréis café?","vosotros queréis café","¿queréis café?"],why:"vocês → vosotros queréis."},
+   {pt:"O senhor pode me ajudar?",a:["¿usted puede ayudarme?","usted puede ayudarme","¿puede ayudarme?"],why:"Formal → usted puede."}],
+ free:{prompt:"Apresente sua família usando 'nosotros' (a gente): onde moram, o que fazem.",
+   models:["Nosotros vivimos en Florianópolis.","Somos tres y nos gusta viajar."]}},
+
+/* ---------- ESTÁGIO 1 ---------- */
+{id:"1.1",stage:"Estágio 1 · Falar de você e da rotina",title:"Estados: ser, estar e as ciladas",goal:"descrever estados, sensações e existência",
+ builder:{lead:"Cada ideia pede um verbo diferente:",cols:[
+   {h:"ser (identidade)",opts:"Soy madre · Soy brasileña"},
+   {h:"estar (estado/lugar)",opts:"Estoy cansada · Estoy en casa"},
+   {h:"tener (sensação)",opts:"Tengo hambre · Tengo frío · Tengo 40 años"},
+   {h:"hacer (clima)",opts:"Hace frío · Hace calor"},
+   {h:"hay (existir)",opts:"Hay una farmacia · Hay mucha gente"}],
+   examples:["Soy madre y estoy cansada.","Tengo hambre y hace frío.","¿Hay una farmacia cerca?"],
+   note:"'estou com fome' → TENGO hambre · 'faz frio' → HACE frío · 'tem pão?' → ¿HAY pan?"},
+ contrast:[
+   {pt:"estou com fome",es:"tengo hambre",tip:"sensação → tener (não 'estoy con hambre')"},
+   {pt:"tenho 40 anos",es:"tengo 40 años",tip:"idade → tener (igual ao PT)"},
+   {pt:"faz frio hoje",es:"hace frío hoy",tip:"clima → hacer (não 'está frío')"},
+   {pt:"tem pão? (existe)",es:"¿hay pan?",tip:"'ter' existencial → hay (não 'tiene')"},
+   {pt:"o banheiro está ao fundo",es:"el baño está al fondo",tip:"lugar de algo definido → estar"}],
+ recognize:[
+   {q:"Estou com sono.",opts:["estoy con sueño","tengo sueño"],c:1,why:"Sensação → tener: tengo sueño."},
+   {q:"Faz calor hoje.",opts:["hace calor hoy","está calor hoy"],c:0,why:"Clima → hacer: hace calor."},
+   {q:"Tem muita gente aqui.",opts:["tiene mucha gente aquí","hay mucha gente aquí"],c:1,why:"Existência → hay."},
+   {q:"Estou cansada.",opts:["estoy cansada","soy cansada"],c:0,why:"Estado passageiro → estar."}],
+ produce:[
+   {pt:"Estou com fome.",a:["tengo hambre"],why:"Sensação → tener."},
+   {pt:"Faz frio hoje.",a:["hace frío hoy","hace frio hoy"],why:"Clima → hacer."},
+   {pt:"Tem uma farmácia perto?",a:["¿hay una farmacia cerca?","hay una farmacia cerca"],why:"Existência → hay."},
+   {pt:"Sou mãe e estou cansada.",a:["soy madre y estoy cansada"],why:"identidade→ser, estado→estar."},
+   {pt:"Tenho pressa.",a:["tengo prisa"],why:"Sensação → tener prisa."}],
+ free:{prompt:"Descreva como você está agora e como está o tempo aí (use estoy, tengo, hace).",
+   models:["Estoy un poco cansada y tengo hambre.","Hace calor hoy y hay mucha gente en la calle."]}},
+
+{id:"1.2",stage:"Estágio 1 · Falar de você e da rotina",title:"\"Eu gosto\": a frase que inverte",goal:"dizer do que você gosta (gustar)",
+ builder:{lead:"O sujeito vira a coisa de que se gosta:",cols:[
+   {h:"a quem",opts:"me · te · le · nos"},
+   {h:"verbo",opts:"gusta (1 coisa/infinitivo) · gustan (várias)"},
+   {h:"o quê",opts:"el café · caminar · los dulces · las películas"}],
+   examples:["Me gusta el café.","Me gusta caminar.","Me gustan los dulces.","Me encanta esa serie."],
+   note:"1 coisa ou verbo → gusta · plural → gustan. Família: encanta, duele, parece, falta."},
+ contrast:[
+   {pt:"eu gosto de café",es:"me gusta el café",tip:"vira 'me gusta' (o café é o sujeito); 'de' some"},
+   {pt:"eu gosto dos doces",es:"me gustan los dulces",tip:"plural → gustan"},
+   {pt:"eu adoro essa série",es:"me encanta esa serie",tip:"adorar → encantar (mesma estrutura)"},
+   {pt:"minha cabeça dói",es:"me duele la cabeza",tip:"doer → doler (me duele...)"}],
+ recognize:[
+   {q:"Eu gosto de café.",opts:["yo gusto café","me gusta de café","me gusta el café"],c:2,why:"me gusta el café (sem 'de', com artigo)."},
+   {q:"Eu gosto dos doces.",opts:["me gusta los dulces","me gustan los dulces"],c:1,why:"Plural → gustan."},
+   {q:"Minha cabeça está doendo.",opts:["mi cabeza duele","me duele la cabeza"],c:1,why:"me duele la cabeza."},
+   {q:"Eu adoro viajar.",opts:["me encanta viajar","yo encanto viajar"],c:0,why:"me encanta + infinitivo."}],
+ produce:[
+   {pt:"Eu gosto de caminhar na praia.",a:["me gusta caminar por la playa","me gusta caminar en la playa"],why:"me gusta + infinitivo."},
+   {pt:"Gosto dos finais de semana.",a:["me gustan los fines de semana"],why:"plural → gustan."},
+   {pt:"Eu adoro essa série.",a:["me encanta esa serie"],why:"adorar → encantar."},
+   {pt:"Minha cabeça dói.",a:["me duele la cabeza"],why:"me duele la cabeza."}],
+ free:{prompt:"Diga 3 coisas de que você gosta e 1 de que não gosta (me gusta / me gustan / no me gusta).",
+   models:["Me gusta el café por la mañana.","Me gustan las películas antiguas.","No me gusta madrugar."]}},
+
+{id:"1.3",stage:"Estágio 1 · Falar de você e da rotina",title:"Artigos e gênero (as surpresas)",goal:"acertar o/a e quando usar o artigo",
+ builder:{lead:"Gêneros que mudam + artigo onde o PT não põe:",cols:[
+   {h:"masculino (cuidado)",opts:"el problema · el día · el idioma · el mapa"},
+   {h:"feminino",opts:"la leche · la sangre · la nariz · la señal"},
+   {h:"artigo extra",opts:"me gusta el fútbol · los lunes · me lavo las manos"}],
+   examples:["Tengo un problema.","La leche está en la nevera.","Me gusta el fútbol.","Voy al médico los lunes."],
+   note:"-ma costuma ser masculino (el problema, el tema). Gosto/dias/corpo pedem artigo."},
+ contrast:[
+   {pt:"o leite",es:"la leche",tip:"gênero muda: leite é feminino em ES"},
+   {pt:"um problema",es:"un problema",tip:"masculino, apesar do -a"},
+   {pt:"gosto de futebol",es:"me gusta el fútbol",tip:"gosto pede artigo (el)"},
+   {pt:"às segundas",es:"los lunes",tip:"dias da semana com artigo"},
+   {pt:"lavo as mãos",es:"me lavo las manos",tip:"corpo → artigo (não 'mis manos')"}],
+ recognize:[
+   {q:"___ leche (o leite)",opts:["el leche","la leche"],c:1,why:"leche é feminino: la leche."},
+   {q:"___ problema (o problema)",opts:["la problema","el problema"],c:1,why:"-ma → masculino: el problema."},
+   {q:"Eu gosto de música.",opts:["me gusta música","me gusta la música"],c:1,why:"gosto pede artigo: la música."},
+   {q:"Lavo as mãos.",opts:["lavo mis manos","me lavo las manos"],c:1,why:"corpo → artigo: las manos."}],
+ produce:[
+   {pt:"O leite está na geladeira.",a:["la leche está en la nevera","la leche está en el refrigerador"],why:"la leche (feminino)."},
+   {pt:"Tenho um problema.",a:["tengo un problema"],why:"un problema (masculino)."},
+   {pt:"Gosto de música.",a:["me gusta la música"],why:"com artigo: la música."},
+   {pt:"Vou ao médico às segundas.",a:["voy al médico los lunes"],why:"los lunes (com artigo)."}],
+ free:{prompt:"Fale de 3 coisas de que você gosta usando o artigo (Me gusta el/la...).",
+   models:["Me gusta el cine.","Me gusta la playa.","Me gusta el café con leche."]}},
+
+{id:"1.4",stage:"Estágio 1 · Falar de você e da rotina",title:"Perífrases do dia a dia",goal:"o que está fazendo, vai fazer e tem que fazer",
+ builder:{lead:"Estruturas que deixam a fala natural:",cols:[
+   {h:"estou fazendo",opts:"estoy + trabajando · comiendo · viviendo"},
+   {h:"vou fazer",opts:"voy a + viajar · descansar · llamarte"},
+   {h:"tenho que fazer",opts:"tengo que + estudiar · ir · trabajar"},
+   {h:"tem que (impessoal)",opts:"hay que + esperar · pagar"}],
+   examples:["Estoy trabajando ahora.","Voy a descansar por la noche.","Tengo que ir al consulado.","Hay que esperar el turno."],
+   note:"voy A viajar (precisa do 'a') · tengo QUE ir (precisa do 'que'). Gerúndio: -ando/-iendo."},
+ contrast:[
+   {pt:"estou trabalhando",es:"estoy trabajando",tip:"estar + gerúndio (-ando/-iendo)"},
+   {pt:"vou viajar",es:"voy a viajar",tip:"precisa do 'a': voy A viajar"},
+   {pt:"tenho que ir",es:"tengo que ir",tip:"precisa do 'que': tengo QUE ir"},
+   {pt:"tem que esperar (impessoal)",es:"hay que esperar",tip:"impessoal → hay que"}],
+ recognize:[
+   {q:"Estou comendo.",opts:["estoy comendo","estoy comiendo"],c:1,why:"-er/-ir → -iendo: comiendo."},
+   {q:"Vou viajar amanhã.",opts:["voy viajar mañana","voy a viajar mañana"],c:1,why:"precisa do 'a': voy a viajar."},
+   {q:"Tenho que trabalhar.",opts:["tengo trabajar","tengo que trabajar"],c:1,why:"precisa do 'que': tengo que."},
+   {q:"Tem que pagar antes. (impessoal)",opts:["hay que pagar antes","tiene que pagar antes"],c:0,why:"impessoal → hay que pagar."}],
+ produce:[
+   {pt:"Estou trabalhando agora.",a:["estoy trabajando ahora"],why:"estar + gerúndio."},
+   {pt:"Vou descansar à noite.",a:["voy a descansar por la noche"],why:"voy a + inf; à noite → por la noche."},
+   {pt:"Tenho que ir ao consulado.",a:["tengo que ir al consulado"],why:"tengo que + inf."},
+   {pt:"Tem que esperar a vez.",a:["hay que esperar el turno","hay que esperar la vez"],why:"impessoal → hay que."}],
+ free:{prompt:"Conte: o que você está fazendo agora, o que vai fazer hoje e o que tem que fazer.",
+   models:["Estoy estudiando español.","Hoy voy a trabajar un poco.","Tengo que llamar al consulado."]}}
+];
+
+/* ===== NAV ===== */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  b.classList.add("active");document.getElementById(b.dataset.v).classList.add("active");window.scrollTo(0,0);
+  if(b.dataset.v==="licoes")renderHome();
+  if(b.dataset.v==="revisar")startReview();
+});
+
+/* ===== HOME / LISTA DE LIÇÕES ===== */
+function isUnlocked(i){return i===0||state.done.includes(LESSONS[i-1].id);}
+function renderHome(){
+  document.getElementById("licao").style.display="none";
+  const host=document.getElementById("home");host.style.display="block";
+  const pct=Math.round(state.done.length/LESSONS.length*100);
+  let h=`<div class="method">🎯 <b>Como cada lição funciona:</b> 1) ver o padrão → 2) notar o contraste PT↔ES → 3) reconhecer → 4) produzir com apoio → 5) produzir livre. Entender a estrutura e depois falar.</div>
+   <div class="topbar"><div class="bar"><div style="width:${pct}%"></div></div><span class="pct">${pct}%</span></div>`;
+  let curStage="";
+  LESSONS.forEach((l,i)=>{
+    if(l.stage!==curStage){curStage=l.stage;h+=`<div class="stagehead">${l.stage}</div>`;}
+    const done=state.done.includes(l.id),un=isUnlocked(i);
+    const cls=done?"done":(un?"avail":"locked");
+    const icon=done?"✓":(un?"▶":"🔒");
+    h+=`<div class="lesson ${cls}" data-i="${i}"><div class="num">${icon}</div>
+      <div><div class="t">${l.title}</div><div class="s">para ${l.goal}</div></div></div>`;
+  });
+  host.innerHTML=h;
+  host.querySelectorAll(".lesson").forEach(el=>{const i=+el.dataset.i;if(isUnlocked(i))el.onclick=()=>openLesson(i);});
+}
+
+/* ===== LIÇÃO: ciclo de 5 passos ===== */
+const STEP_NAMES=["Ver o padrão","Notar o contraste","Reconhecer","Produzir com apoio","Produzir livre"];
+function openLesson(i){
+  const l=LESSONS[i];let step=0;window.scrollTo(0,0);
+  document.getElementById("home").style.display="none";
+  const host=document.getElementById("licao");host.style.display="block";
+  function frame(inner){
+    const bars=STEP_NAMES.map((_,k)=>`<div class="${k<=step?'on':''}"></div>`).join("");
+    return `<button class="back" onclick="renderHome()">← Lições</button>
+      <div class="count">${l.title}</div>
+      <div class="stepbar">${bars}</div>
+      <div class="steplabel">Passo ${step+1}/5 · ${STEP_NAMES[step]}</div>
+      <div class="card">${inner}</div>`;
+  }
+  function go(n){step=n;render();window.scrollTo(0,0);}
+  function render(){
+    if(step===0) renderModel();
+    else if(step===1) renderContrast();
+    else if(step===2) renderRecognize();
+    else if(step===3) renderProduce();
+    else renderFree();
+  }
+  /* passo 1 */
+  function renderModel(){
+    const b=l.builder;
+    let bx=`<div class="builder"><div style="font-size:13px;color:var(--muted);margin-bottom:6px">${b.lead}</div>`;
+    b.cols.forEach(c=>{bx+=`<div class="bcol"><div class="h">${c.h}</div><div class="opts">${c.opts.replace(/·/g,"<b>·</b>")}</div></div>`;});
+    bx+=`</div>`;
+    let ex=`<div class="examples">`+b.examples.map(e=>`<div>✅ ${e}</div>`).join("")+`</div>`;
+    host.innerHTML=frame(`<h3>${l.title}</h3>${bx}${ex}<div class="ex-box">💡 ${b.note}</div>
+      <button class="btn" onclick="__go(1)">Entendi o padrão →</button>`);
+  }
+  /* passo 2 */
+  function renderContrast(){
+    let rows=l.contrast.map(c=>`<tr><td class="pt">🇧🇷 ${c.pt}</td><td class="es">🇪🇸 ${c.es}</td></tr><tr><td colspan="2" class="tip">↳ ${c.tip}</td></tr>`).join("");
+    host.innerHTML=frame(`<h3>O que muda do português</h3><table class="contrast">${rows}</table>
+      <button class="btn" onclick="__go(2)">Agora vou treinar →</button>`);
+  }
+  /* passo 3 */
+  function renderRecognize(){
+    let qi=0,answered=false;
+    function rq(){
+      answered=false;const d=l.recognize[qi];
+      let opts=d.opts.map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join("");
+      host.innerHTML=frame(`<div class="count">Reconhecer ${qi+1}/${l.recognize.length}</div>
+        <div class="q">${d.q}</div>${opts}<div class="fb" id="rfb"></div>
+        <button class="btn" id="rnext" style="display:none">Próximo →</button>`);
+      host.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{
+        if(answered)return;answered=true;const k=+btn.dataset.k;const fb=document.getElementById("rfb");
+        host.querySelectorAll(".opt").forEach((x,xi)=>{if(xi===d.c)x.classList.add("correct");else if(xi===k)x.classList.add("wrong");});
+        fb.className="fb "+(k===d.c?"ok":"bad");fb.innerHTML=`<div class="ans">${k===d.c?"✓ Isso!":"A forma certa está em verde."}</div><div class="why">💡 ${d.why}</div>`;
+        const nb=document.getElementById("rnext");nb.style.display="block";nb.textContent=(qi+1<l.recognize.length)?"Próximo →":"Ir produzir →";
+        nb.onclick=()=>{qi++;if(qi<l.recognize.length)rq();else go(3);};
+      });
+    }
+    rq();
+  }
+  /* passo 4 */
+  function renderProduce(){
+    let qi=0,answered=false;
+    function pq(){
+      answered=false;const d=l.produce[qi];
+      const bb=l.builder.cols.map(c=>`<div class="bcol"><div class="h">${c.h}</div><div class="opts">${c.opts.replace(/·/g,"<b>·</b>")}</div></div>`).join("");
+      host.innerHTML=frame(`<div class="count">Produzir ${qi+1}/${l.produce.length}</div>
+        <div class="q">Traduza: <b>${d.pt}</b></div>
+        <input id="pin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva em espanhol…">
+        <button class="btn" id="pck">Verificar</button>
+        <details><summary>👀 ver a tabela de apoio</summary><div class="builder" style="margin-top:8px">${bb}</div></details>
+        <div class="fb" id="pfb"></div>
+        <button class="btn alt" id="pnext" style="display:none">Próximo →</button>`);
+      const inp=document.getElementById("pin"),ck=document.getElementById("pck"),fb=document.getElementById("pfb"),nx=document.getElementById("pnext");
+      inp.focus();
+      ck.onclick=()=>{
+        if(answered){return;}if(!inp.value.trim())return;
+        answered=true;inp.disabled=true;ck.style.display="none";
+        const m=matchAns(inp.value,d.a);
+        fb.className="fb "+(m==="no"?"bad":"ok");
+        fb.innerHTML=(m==="exact"?`<div class="ans">✓ Perfeito!</div>`:m==="loose"?`<div class="ans">✓ Quase — confira o acento</div>`:`<div class="ans">Resposta: ${d.a[0]}</div>`)+`<div class="why">💡 ${d.why}</div>`;
+        nx.style.display="block";nx.textContent=(qi+1<l.produce.length)?"Próximo →":"Última etapa →";
+        nx.onclick=()=>{qi++;if(qi<l.produce.length)pq();else go(4);};
+      };
+      inp.addEventListener("keydown",e=>{if(e.key==="Enter")ck.click();});
+    }
+    pq();
+  }
+  /* passo 5 */
+  function renderFree(){
+    host.innerHTML=frame(`<h3>Produza livre 🗣️</h3>
+      <p style="font-size:15px">${l.free.prompt}</p>
+      <textarea id="fin" placeholder="escreva (ou fale em voz alta) suas frases…"></textarea>
+      <button class="btn alt" id="fsee">Ver frases-modelo</button>
+      <div class="fb" id="ffb"></div>
+      <button class="btn" id="fdone" style="display:none">✓ Concluir lição</button>`);
+    document.getElementById("fsee").onclick=()=>{
+      const fb=document.getElementById("ffb");fb.className="fb ok";
+      fb.innerHTML=`<div class="ans">Modelos para comparar:</div>`+l.free.models.map(m=>`<div class="why">✅ ${m}</div>`).join("");
+      document.getElementById("fdone").style.display="block";
+    };
+    document.getElementById("fdone").onclick=()=>{
+      if(!state.done.includes(l.id)){state.done.push(l.id);save();}
+      const next=i+1<LESSONS.length?i+1:null;
+      host.innerHTML=`<div class="card done-screen"><div class="big">🎉</div><h3>Lição concluída!</h3>
+        <p class="sub">Você entendeu a estrutura e produziu. Isso volta na aba Revisar.</p>
+        ${next!==null?`<button class="btn" id="gn">Próxima lição →</button>`:`<p class="sub">Você terminou os Estágios 0 e 1! 🥳</p>`}
+        <button class="btn ghost" onclick="renderHome()">Voltar às lições</button></div>`;
+      if(next!==null)document.getElementById("gn").onclick=()=>openLesson(next);
+    };
+  }
+  window.__go=go;
+  render();
+}
+window.renderHome=renderHome;window.openLesson=openLesson;
+
+/* ===== REVISAR (retrieval PT→ES) ===== */
+function startReview(){
+  const host=document.getElementById("rev-host");
+  const doneL=LESSONS.filter(l=>state.done.includes(l.id));
+  if(!doneL.length){host.innerHTML=`<p class="sub">Conclua ao menos uma lição para liberar a revisão.</p>`;return;}
+  let pool=[];doneL.forEach(l=>l.produce.forEach(p=>pool.push(p)));
+  pool=shuffle(pool);let qi=0,answered=false;
+  function rq(){
+    answered=false;const d=pool[qi];
+    host.innerHTML=`<div class="count">Revisão ${qi+1}/${pool.length}</div>
+      <div class="q">Traduza: <b>${d.pt}</b></div>
+      <input id="rin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="escreva em espanhol…">
+      <button class="btn" id="rck">Verificar</button><div class="fb" id="rfb2"></div>
+      <button class="btn alt" id="rnx" style="display:none">Próximo →</button>`;
+    const inp=document.getElementById("rin"),ck=document.getElementById("rck"),fb=document.getElementById("rfb2"),nx=document.getElementById("rnx");
+    inp.focus();
+    ck.onclick=()=>{
+      if(answered)return;if(!inp.value.trim())return;answered=true;inp.disabled=true;ck.style.display="none";
+      const m=matchAns(inp.value,d.a);
+      fb.className="fb "+(m==="no"?"bad":"ok");
+      fb.innerHTML=(m==="exact"?`<div class="ans">✓ Perfeito!</div>`:m==="loose"?`<div class="ans">✓ Quase — confira o acento</div>`:`<div class="ans">Resposta: ${d.a[0]}</div>`)+`<div class="why">💡 ${d.why}</div>`;
+      nx.style.display="block";nx.textContent=(qi+1<pool.length)?"Próximo →":"Concluir";
+      nx.onclick=()=>{qi++;if(qi<pool.length)rq();else host.innerHTML=`<div class="done-screen"><div class="big">🔁</div><h3>Revisão concluída!</h3><button class="btn" onclick="startReview()">Recomeçar</button></div>`;};
+    };
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")ck.click();});
+  }
+  rq();
+}
+
+renderHome();
+</script>
+</body>
+</html>
